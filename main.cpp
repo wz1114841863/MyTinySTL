@@ -1,9 +1,19 @@
 #include <iostream>
+#include "./MyTinySTL/utils/util.h"
+
+#include "./Test/utils_test.h"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
-    int a = 10;
-    int b = 10;
-    std::swap(a, b);
+
     return 0;
 }
+
+void test_utils() {
+    // 测试utils.h中定义的: move, forward, swap, pair
+    test_move();
+    test_move_1();
+    test_forward();
+    test_swap();
+    test_pair();
+}
+
