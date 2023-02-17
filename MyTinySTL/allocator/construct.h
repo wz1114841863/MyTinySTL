@@ -5,9 +5,10 @@
 // construct: 负责构造对象
 // destroy: 负责析构对象
 
-#include "../utils/type_traits.h"
-#include "../utils/util.h"
-#include "../iterator/iterator.h"
+#include <new>
+#include "type_traits.h"
+#include "util.h"
+#include "iterator.h"
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -15,15 +16,15 @@
 #endif // _MSC_VER
 
 namespace mystl {
-    // construct
+    // construct: 构造对象
     template <typename Ty>
     void construct(Ty *ptr) {
-        ::new ((void *)ptr) Ty();  // placement new
+        ::new ((void *)ptr) Ty();  // placement new，使用TY的默认构造函数
     }
 
     template <typename Ty1, typename Ty2>
     void construct(Ty1 *ptr, const Ty2& value) {
-        ::new ((void *)ptr) Ty1(value);
+        ::new ((void *)ptr) Ty1(value);  // placement new, 调用 Ty1::Ty1(value)
     }
 
     template <typename Ty, typename ... Args>  // 可变长参数列表
@@ -33,10 +34,10 @@ namespace mystl {
 
     // destroy
     template <typename Ty>
-    void destroy_one(Ty *, std::true_type) {}
+    void destroy_one(Ty *, std::true_type) {}  // 使用默认析构函数，无额外操作
 
     template <typename Ty>
-    void destroy_one(Ty *pointer, std::false_type) {
+    void destroy_one(Ty *pointer, std::false_type) {  // 调用自己设计的析构函数
         if (pointer != nullptr) {
             pointer->~Ty();
         }
@@ -59,7 +60,7 @@ namespace mystl {
     template <class ForwardIter>
     void destroy(ForwardIter first, ForwardIter last) {
         destroy_cat(first, last, std::is_trivially_destructible<
-                typename iterator_traits<ForwardIter>::value_type>{});
+            typename iterator_traits<ForwardIter>::value_type>{});
     }
 }  // namespace mystl
 

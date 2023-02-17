@@ -1,12 +1,7 @@
 #include <iostream>
-#include "./MyTinySTL/utils/util.h"
 
-#include "./Test/utils_test.h"
-
-int main() {
-
-    return 0;
-}
+#include "utils_test.cpp"
+#include "allocator_test.cpp"
 
 void test_utils() {
     // 测试utils.h中定义的: move, forward, swap, pair
@@ -17,3 +12,12 @@ void test_utils() {
     test_pair();
 }
 
+void test_alloc() {
+    std::cout << "测试mystl::alloc" << std::endl;
+    test_alloc_01();
+}
+
+int main() {
+    test_alloc();
+    return 0;
+}

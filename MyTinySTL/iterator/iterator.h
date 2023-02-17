@@ -105,10 +105,10 @@ namespace mystl {
     template <typename Iterator>
     struct is_bidirectional_iterator : public has_iterator_cat_of<Iterator, bidirectional_iterator_tag> {};
 
-    template <typename Iterator>
-    struct is_iterator :
-            public m_bool_constant<is_input_iterator<Iterator>:value ||
-            is_output_iterqtor<Iterator>::value> {};
+    // template <typename Iterator>
+    // struct is_iterator :
+    //         public m_bool_constant<is_input_iterator<Iterator>::value ||
+    //         is_output_iterqtor<Iterator>::value> {};
 
     // 萃取某个迭代器的 category
     template <typename Iterator>

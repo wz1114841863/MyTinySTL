@@ -1,12 +1,8 @@
-#ifndef TINYSTL_UTILS_TEST_H
-#define TINYSTL_UTILS_TEST_H
-
 #include <iostream>
 #include <string>
 #include <windows.h>
 #include <ctime>
-#include <utility>
-#include "../MyTinySTL/utils/util.h"
+#include "util.h"
 
 int gettimeofday(struct timeval *tp)
 {
@@ -180,4 +176,3 @@ void test_pair() {
     std::cout << "after swap my_p7: " << my_p7.first << "my_p8: " << my_p8.first << std::endl;
 
 }
-#endif //TINYSTL_UTILS_TEST_H
