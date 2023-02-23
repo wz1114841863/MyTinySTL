@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "utils_test.cpp"
+#include "util_test.cpp"
 #include "allocator_test.cpp"
 
 void test_utils() {
@@ -15,9 +15,11 @@ void test_utils() {
 void test_alloc() {
     std::cout << "测试mystl::alloc" << std::endl;
     test_alloc_01();
+    test_alloc_02();
 }
 
 int main() {
     test_alloc();
+    test_utils();
     return 0;
 }

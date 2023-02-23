@@ -3,7 +3,7 @@
 
 // 通用工具头文件：move, forward, swap, pair...
 #include <cstddef>
-#include "type_traits.h"
+#include <type_traits>
 
 namespace mystl {
     // move: 不管传入的是左值还是右值，最终转换为右值
@@ -57,7 +57,7 @@ namespace mystl {
      * 两个模板参数分别表示两个数据的类型
      * 用first 和 second 来分别取出第一个数据和第二个数据
      */
-    template <class Ty1, class Ty2>
+    template <typename Ty1, typename Ty2>
     struct pair {
         typedef Ty1 first_type;
         typedef Ty2 second_type;
@@ -94,65 +94,65 @@ namespace mystl {
         : first(a), second(b) {}
 
         pair(const pair &rhs) = default;
-        pair(pair &&rhs) = default;
+        pair(pair &&rhs) noexcept = default;
 
         // implicit constructiable for other type
         template <typename Other1, typename Other2,
                 typename std::enable_if<
-                std::is_constructible<Ty1, Other1>::value &&
-                std::is_constructible<Ty2, Other2>::value &&
-                std::is_convertible<Other1 &&, Ty1>::value &&
-                std::is_convertible<Other2 &&, Ty2>::value, int>::type = 0>
+                    std::is_constructible<Ty1, Other1>::value &&
+                    std::is_constructible<Ty2, Other2>::value &&
+                    std::is_convertible<Other1 &&, Ty1>::value &&
+                    std::is_convertible<Other2 &&, Ty2>::value, int>::type = 0>
         constexpr pair(Other1 &&a, Other2 &&b)
         :first(mystl::forward<Other1>(a)), second(mystl::forward<Other2>(b)) {}
 
         // explicit constructible for other type
         template<typename Other1, class Other2,
                 typename std::enable_if<
-                std::is_constructible<Ty1, Other1>::value &&
-                std::is_constructible<Ty2, Other2>::value &&
-                (!std::is_convertible<Other1, Ty1>::valuse ||
-                !std::is_convertible<Other2, Ty2>::value), int>::type = 0>
+                    std::is_constructible<Ty1, Other1>::value &&
+                    std::is_constructible<Ty2, Other2>::value &&
+                    (!std::is_convertible<Other1, Ty1>::valuse ||
+                    !std::is_convertible<Other2, Ty2>::value), int>::type = 0>
         explicit constexpr pair(Other1 &&a, Other2 &&b)
         : first(mystl::forward<Other1>(a)), second(mystl::forward<Other2>(b)) {}
 
         // implicit constructiable for other pair
         template <typename Other1, typename Other2,
                 typename std::enable_if<
-                std::is_constructible<Ty1, const Other1&>::value &&
-                std::is_constructible<Ty2, const Other2&>::value &&
-                std::is_convertible<const Other1 &, Ty1>::value &&
-                std::is_convertible<const Other2 &, Ty2>::value, int>::type = 0>
-        constexpr pair(const pair<Other1, Other2> &other)
+                    std::is_constructible<Ty1, const Other1&>::value &&
+                    std::is_constructible<Ty2, const Other2&>::value &&
+                    std::is_convertible<const Other1 &, Ty1>::value &&
+                    std::is_convertible<const Other2 &, Ty2>::value, int>::type = 0>
+        explicit constexpr pair(const pair<Other1, Other2> &other)
         : first(other.first), second(other.second) {}
 
         // explicit constructiable for other pair
         template <class Other1, class Other2,
                 typename std::enable_if<
-                std::is_constructible<Ty1, const Other1&>::value &&
-                std::is_constructible<Ty2, const Other2&>::value &&
-                (!std::is_convertible<const Other1&, Ty1>::value ||
-                !std::is_convertible<const Other2&, Ty2>::value), int>::type = 0>
+                    std::is_constructible<Ty1, const Other1&>::value &&
+                    std::is_constructible<Ty2, const Other2&>::value &&
+                    (!std::is_convertible<const Other1&, Ty1>::value ||
+                    !std::is_convertible<const Other2&, Ty2>::value), int>::type = 0>
         explicit constexpr pair(const pair<Other1, Other2>& other)
         : first(other.first), second(other.second) {}
 
         // implicit constructiable for other pair
         template <typename Other1, typename Other2,
                 typename std::enable_if<
-                std::is_constructible<Ty1, const Other1&>::value &&
-                std::is_constructible<Ty2, const Other2&>::value &&
-                std::is_convertible<const Other1 &, Ty1>::value &&
-                std::is_convertible<const Other2 &, Ty2>::value, int>::type = 0>
-        constexpr pair(const pair<Other1, Other2> &&other)
+                    std::is_constructible<Ty1, const Other1&>::value &&
+                    std::is_constructible<Ty2, const Other2&>::value &&
+                    std::is_convertible<const Other1 &, Ty1>::value &&
+                    std::is_convertible<const Other2 &, Ty2>::value, int>::type = 0>
+        explicit constexpr pair(const pair<Other1, Other2> &&other)
         : first(mystl::forward<Other1>(other.first)), second(mystl::forward<Other2>()) {}
 
         // explicit constructiable for other pair
         template <typename Other1, typename Other2,
                 typename std::enable_if<
-                std::is_constructible<Ty1, const Other1&>::value &&
-                std::is_constructible<Ty2, const Other2&>::value &&
-                (!std::is_convertible<const Other1&, Ty1>::value ||
-                !std::is_convertible<const Other2&, Ty2>::value), int>::type = 0>
+                    std::is_constructible<Ty1, const Other1&>::value &&
+                    std::is_constructible<Ty2, const Other2&>::value &&
+                    (!std::is_convertible<const Other1&, Ty1>::value ||
+                    !std::is_convertible<const Other2&, Ty2>::value), int>::type = 0>
         explicit constexpr pair(const pair<Other1, Other2> &&other)
         : first(mystl::forward<Other1>(other.first)), second(mystl::forward<Other2>()) {}
 
