@@ -1,3 +1,4 @@
 add_subdirectory(allocator)
 add_subdirectory(utils)
 add_subdirectory(iterator)
+add_subdirectory(algorithm)

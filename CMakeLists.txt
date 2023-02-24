@@ -10,4 +10,4 @@ add_executable(tinySTL main.cpp)
 
 add_subdirectory(MyTinySTL)
 add_subdirectory(Test)
-target_link_libraries(tinySTL PRIVATE test allocator iterator utils )
+target_link_libraries(tinySTL PRIVATE test algorithm allocator iterator utils)
