@@ -8,6 +8,7 @@ set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -O2 -Wall -Wextra -Wno-sign-compare \
 
 add_executable(tinySTL main.cpp)
 
+message(${PROJECT_SOURCE_DIR})
 add_subdirectory(MyTinySTL)
 add_subdirectory(Test)
 target_link_libraries(tinySTL PRIVATE test algorithm allocator iterator utils)
