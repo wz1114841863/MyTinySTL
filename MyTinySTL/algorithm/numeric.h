@@ -14,7 +14,7 @@ namespace mystl {
     template <typename InputIter, typename T>
     T accumulate(InputIter first, InputIter last, T init) {
         for (; first != last; ++first) {
-            inin += *first;
+            init = init + *first;
         }
 
         return init;
@@ -69,12 +69,13 @@ namespace mystl {
     template <typename InputIter1, typename InputIter2, typename T>
     T inner_product(InputIter1 first1, InputIter1 last1, InputIter1 first2, T init) {
         for (; first1 != last1; ++first1, ++first2) {
-            init += (*first1 * *first2);
+            init = init + (*first1 * *first2);
         }
         return init;
     }
 
-    template <typename InputIter1, typename InputIter2, typename T>
+    template <typename InputIter1, typename InputIter2, typename T,
+            typename BinaryOp1, typename BinaryOp2>
     T inner_product(InputIter1 first1, InputIter1 last1, InputIter1 first2, T init,
                     BinaryOp1 binary_op1, BinaryOp2 binary_op2) {
         for (; first1 != last1; ++first1, ++first2) {
@@ -90,8 +91,7 @@ namespace mystl {
     template <typename ForwardIter, typename T>
     void itoa(ForwardIter first, ForwardIter last, T value) {
         while (first != last) {
-            *first++ = value;
-            ++value;
+            *first++ = value++;
         }
     }
 
@@ -126,5 +126,37 @@ namespace mystl {
         return ++result;
     }
 
+    /*****************************************************************************************/
+    // power
+    // 版本1：幂次运算，指定运算型式为乘法
+    // 版本2：幂次运算，进行自定义二元操作
+    /*****************************************************************************************/
+    // 版本一：乘幂
+    template <typename T, typename Interger>
+    inline T power(T x, Interger n) {
+        return power(x, n, mystl::multiplies<T>());  // 调用第二版本，指定运算为乘法
+    }
+
+    // 版本二：指定二元操作
+    template <typename T, typename Interger, typename BinaryOp>
+    T power(T x, Interger n, BinaryOp op) {
+        if (n == 0) {
+            return mystl::identity_element(op);  // 取出证同元素
+        }
+        while ((n & 1) == 0) {  // 判断n是否为偶数, 是偶数, n&1返回0; 否则返回1, 为奇数。
+            n >>= 1;  // 右移运算并赋值符
+            x = op(x, x);
+        }
+        T result = x;
+        n >>= 1;  // 如果n是偶数此时n == 1, 右移后为0，反之进入下个while循环
+        while (n != 0) {
+            x = op(x, x);
+            if ((n & 1) != 0) {  // n为奇数，单独乘以一个x，即result
+                result = op(result, x);
+            }
+            n >>= 1;
+        }
+        return result;
+    }
 }  // namespace mystl;
 #endif //TINYSTL_NUMERIC_H

@@ -1,5 +1,5 @@
-#ifndef TINYSTL_FUNCTION_H
-#define TINYSTL_FUNCTION_H
+#ifndef TINYSTL_FUNCTIONAL_H
+#define TINYSTL_FUNCTIONAL_H
 
 // 包含了仿函数和哈希函数
 #include <cstddef>
@@ -103,7 +103,7 @@ namespace mystl {
 
     // 函数对象：不等于
     template <typename T>
-    struct equal_to :public binary_function<T, T, bool> {
+    struct not_equal_to :public binary_function<T, T, bool> {
         bool operator()(const T &x, const T &y) const {
             return x != y;
         }
@@ -154,7 +154,7 @@ namespace mystl {
 
     // 函数对象：逻辑或
     template <typename T>
-    struct logical_and :public binary_function<T, T, bool> {
+    struct logical_or :public binary_function<T, T, bool> {
         bool operator()(const T &x, const T &y) const {
             return x || y;
         }
@@ -162,7 +162,7 @@ namespace mystl {
 
     // 函数对象：逻辑非
     template <typename T>
-    struct logical_and :public unary_function<T, bool> {
+    struct logical_not :public unary_function<T, bool> {
         bool operator()(const T &x) const {
             return !x;
         }
@@ -182,7 +182,7 @@ namespace mystl {
     // 选择函数：接受一个pair，返回第一个元素
     template <typename Pair>
     struct selectfirst :public unary_function<Pair, typename Pair::first_type> {
-        const typename PairL::first_type &operator()(const Pair &x) const {
+        const typename Pair::first_type &operator()(const Pair &x) const {
             return x.first;
         }
     };
@@ -190,7 +190,7 @@ namespace mystl {
     // 选择函数：接受一个pair，返回第二个元素
     template <typename Pair>
     struct selectsecond :public unary_function<Pair, typename Pair::second_type> {
-        const typename PairL::second_type &operator()(const Pair &x) const {
+        const typename Pair::second_type &operator()(const Pair &x) const {
             return x.second;
         }
     };
@@ -205,7 +205,7 @@ namespace mystl {
 
     // 投射函数，返回第二参数
     template <typename Arg1, typename Arg2>
-    struct projectfirst :public binary_function<Arg1, Arg2, Arg2> {
+    struct projectsecond :public binary_function<Arg1, Arg2, Arg2> {
         Arg2 operator()(const Arg1 &, const Arg2 &y) const {
             return y;
         }
@@ -306,4 +306,4 @@ template <> struct hash<Type>                \
         }
     };
 } // namespace mystl;
-#endif //TINYSTL_FUNCTION_H
+#endif //TINYSTL_FUNCTIONAL_H

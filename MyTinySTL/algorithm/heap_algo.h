@@ -14,15 +14,17 @@ namespace mystl {
     void push_heap_aux(RandomIter first, Distance holeIndex, Distance topIndex, T value) {
         auto parent = (holeIndex - 1) / 2;  // 取父节点
         while (holeIndex > topIndex && *(first + parent) < value) {
-            *(first + holeIndex) = *(first + parent);
-            holeIndex = parent;
+            // 当尚未到达顶端，且父节点小于新插入节点值，不符合max-heap
+            *(first + holeIndex) = *(first + parent);  // 令当前索引值为父节点值
+            holeIndex = parent;  // 进行调整
             parent = (holeIndex - 1) / 2;
         }
-        *(first + holeIndex) = value;
+        *(first + holeIndex) = value;  // 插入新节点值
     }
 
     template <typename RandomIter, typename Distance>
     void push_heap_d(RandomIter first, RandomIter last, Distance) {
+        // 根据隐式表达法的结构特性，last-1表示新插入节点。
         mystl::push_heap_aux(first, (last - first) - 1, static_cast<Distance>(0), *(last - 1));
     }
 
@@ -68,9 +70,10 @@ namespace mystl {
             if (*(first + rchild) < *(first + (rchild - 1))) {  // 对比左子节点与右子节点
                 --rchild;  // 左子节点索引
             }
+            // 令较大值为洞值，再令洞号下移至较大子节点处
             *(first + holeIndex) = *(first + rchild);
             holeIndex = rchild;
-            rchild = 2 * rchild + 2;
+            rchild = 2 * rchild + 2;  // 找出新的右节点
         }
         if (rchild == len) {  // 没有右子节点, 但存在左子节点
             *(first + holeIndex) = *(first + (rchild - 1));
@@ -78,12 +81,13 @@ namespace mystl {
         }
 
         // 再执行一次上溯过程
+        // 等同于：*（first + holeIndex) = value;
         mystl::push_heap_aux(first, holeIndex, topIndex, value);
     }
 
     // 先将首值调至尾节点，然后调整[first, last - 1)使之重新成为一个 max-heap
-    template <typename RandomIter, typename Distance>
-    void push_heap_aux(RandomIter first, RandomIter last, RandomIter result,
+    template <typename RandomIter, typename T, typename Distance>
+    void pop_heap_aux(RandomIter first, RandomIter last, RandomIter result,
                        T value, Distance *) {
         *result = *first;
         mystl::adjust_heap(first, static_cast<Distance>(0), last - first, value);
@@ -118,7 +122,8 @@ namespace mystl {
     }
 
     // 先将首值调至尾节点，然后调整[first, last - 1)使之重新成为一个 max-heap
-    template <typename RandomIter, typename Distance>
+    template <typename RandomIter, typename T,
+            typename Distance, typename Compared>
     void push_heap_aux(RandomIter first, RandomIter last, RandomIter result,
                        T value, Distance *, Compared comp) {
         *result = *first;
@@ -137,7 +142,7 @@ namespace mystl {
     /*****************************************************************************************/
     template <typename RandomIter>
     void sort_heap(RandomIter first, RandomIter last) {
-        // 大顶堆。每执行一次pop_heap, 最大的元素都被放到尾部，知道容器最多只有一个元素
+        // 大顶堆。每执行一次pop_heap, 最大的元素都被放到尾部，直到容器最多只有一个元素
         while (last - first > 1) {
             mystl::pop_heap(first, last--);
         }
@@ -166,9 +171,9 @@ namespace mystl {
             // 重排以 holeIndex 为首的子树
             mystl::adjust_heap(first, holeIndex, len, *(first + holeIndex));
             if(holeIndex == 0) {
-                return ;
+                return ;  // 排完根节点，就结束
             }
-            --holeIndex;
+            --holeIndex;  // 头部向前的一个节点
         }
 
     }
