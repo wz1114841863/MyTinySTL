@@ -156,11 +156,11 @@ namespace mystl {
 
     public:
         // 重载 operator* 和 operator->
-        T &operator*() const {return *m_ptr;}
-        T *operator->() const {return m_ptr;}
+        T &operator*() const { return *m_ptr; }
+        T *operator->() const { return m_ptr; }
 
         // 获得指针
-        T *get() const {return m_ptr};
+        T *get() const { return m_ptr; }
 
         // 释放指针
         T *release() {
