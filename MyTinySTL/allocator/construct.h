@@ -16,19 +16,19 @@
 #endif // _MSC_VER
 
 namespace mystl {
-    // construct: 构造对象
+    // construct: 全局函数，构造对象
     template <typename Ty>
-    void construct(Ty *ptr) {
+    void construct(Ty *ptr) {  // ptr指向已经分配好的内存空间
         ::new ((void *)ptr) Ty();  // placement new，使用TY的默认构造函数
     }
 
     template <typename Ty1, typename Ty2>
-    void construct(Ty1 *ptr, const Ty2& value) {
+    void construct(Ty1 *ptr, const Ty2 &value) {
         ::new ((void *)ptr) Ty1(value);  // placement new, 调用 Ty1::Ty1(value)
     }
 
     template <typename Ty, typename ... Args>  // 可变长参数列表
-    void construct(Ty *ptr, Args&& ... args) {
+    void construct(Ty *ptr, Args&& ...args) {
         ::new ((void *)ptr) Ty(mystl::forward<Args>(args)...);  // 完美转发
     }
 
@@ -48,16 +48,17 @@ namespace mystl {
 
     template <typename ForwardIter>
     void destroy_cat(ForwardIter first, ForwardIter last, std::false_type) {
-        for (; first != last; ++first)
-            destroy(& *first);
+        for (; first != last; ++first) {
+            destroy(& *first);  // 回调destroy(Ty *pointer)
+        }
     }
 
-    template <class Ty>
+    template <typename Ty>
     void destroy(Ty *pointer) {
         destroy_one(pointer, std::is_trivially_destructible<Ty>{});
     }
 
-    template <class ForwardIter>
+    template <typename ForwardIter>
     void destroy(ForwardIter first, ForwardIter last) {
         destroy_cat(first, last, std::is_trivially_destructible<
             typename iterator_traits<ForwardIter>::value_type>{});

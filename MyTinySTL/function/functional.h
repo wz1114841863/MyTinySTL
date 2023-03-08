@@ -225,7 +225,7 @@ namespace mystl {
             return reinterpret_cast<size_t>(p);
         }
     };
-
+    /*
     // 对于整型类型，只是返回原值
 #define MYSTL_TRIVIAL_HASH_FCN(Type)         \
 template <> struct hash<Type>                \
@@ -305,5 +305,7 @@ template <> struct hash<Type>                \
             return val == 0.0f ? 0 : bitwise_hash((const unsigned char *)&val, sizeof(long double)));
         }
     };
+
+    */
 } // namespace mystl;
 #endif //TINYSTL_FUNCTIONAL_H

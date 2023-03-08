@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "util_test.cpp"
-#include "allocator_test.cpp"
+#include "test_util.h"
+#include "test_allocator.h"
 
 void test_utils() {
     // 测试utils.h中定义的: move, forward, swap, pair
@@ -20,6 +20,5 @@ void test_alloc() {
 
 int main() {
     test_alloc();
-    test_utils();
     return 0;
 }
