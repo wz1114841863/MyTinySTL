@@ -5,9 +5,8 @@
 #include <cstddef>
 
 namespace mystl {
-    /*
-     * traits模板
-     * */
+    // traits模板
+
     // 定义一元函数的参数型别和返回值型别
     template <typename Arg, typename Result>
     struct unary_function {
@@ -22,9 +21,9 @@ namespace mystl {
         typedef Arg2    second_argument_type;
         typedef Result  result_type;
     };
-    /*
-     * 算术运算
-     * */
+
+    // 算术运算
+
     // 函数对象：加法
     template <typename T>
     struct plus :public binary_function<T, T, T> {
@@ -90,9 +89,8 @@ namespace mystl {
         return T(1);
     }
 
-    /*
-     *  关系运算
-     * */
+    // 关系运算
+
     // 函数对象：等于
     template <typename T>
     struct equal_to :public binary_function<T, T, bool> {
@@ -141,9 +139,7 @@ namespace mystl {
         }
     };
 
-    /*
-     * 逻辑运算
-     * */
+    // 逻辑运算
     // 函数对象：逻辑与
     template <typename T>
     struct logical_and :public binary_function<T, T, bool> {
@@ -168,9 +164,7 @@ namespace mystl {
         }
     };
 
-    /*
-     * 正同、选择、投射
-     * */
+    // 正同、选择、投射
     // 证同函数：不会改变元素，返回本身
     template <typename T>
     struct identity :public unary_function<T, bool> {
@@ -211,9 +205,8 @@ namespace mystl {
         }
     };
 
-    /**
-     *  哈希函数对象
-     * */
+
+    // 哈希函数对象
     // 对于大部分类型，hash function 什么都不做
     template <typename Key>
     struct hash {};
@@ -225,14 +218,15 @@ namespace mystl {
             return reinterpret_cast<size_t>(p);
         }
     };
-    /*
+
     // 对于整型类型，只是返回原值
-#define MYSTL_TRIVIAL_HASH_FCN(Type)         \
-template <> struct hash<Type>                \
-{                                            \
-  size_t operator()(Type val) const noexcept \
-  { return static_cast<size_t>(val); }       \
-};
+    #define MYSTL_TRIVIAL_HASH_FCN(Type)                \
+    template <>                                         \
+    struct hash<Type> {                                                                            \
+        size_t operator()(Type val) const noexcept {    \
+            return static_cast<size_t>(val);            \
+        }                                               \
+    };
 
     MYSTL_TRIVIAL_HASH_FCN(bool)
 
@@ -264,18 +258,20 @@ template <> struct hash<Type>                \
 
     MYSTL_TRIVIAL_HASH_FCN(unsigned long long)
 
-#undef MYSTL_TRIVIAL_HASH_FCN
+    #undef MYSTL_TRIVIAL_HASH_FCN
 
     // 对于浮点数，逐位哈希
     // first: 数据地址，count 数据位数
-    inline size_t bitwise_hash(const unsigned char &first, size_t count) {
-#if (_MSC_VER && _WIN64) || ((__GNUC__ || __clang__) &&__SIZEOF_POINTER__ == 8)
-        const size_t fnv_offset = 14695981039346656037ull;
-        const size_t fnv_prime = 1099511628211ull;
-#else
-        const size_t fnv_offset = 2166136261u;
-        const size_t fnv_prime = 16777619u;
-#endif
+    inline size_t bitwise_hash(const unsigned char *first, size_t count) {
+
+        #if (_MSC_VER && _WIN64) || ((__GNUC__ || __clang__) &&__SIZEOF_POINTER__ == 8)
+                const size_t fnv_offset = 14695981039346656037ull;
+                const size_t fnv_prime = 1099511628211ull;
+        #else
+                const size_t fnv_offset = 2166136261u;
+                const size_t fnv_prime = 16777619u;
+        #endif
+
         size_t result = fnv_offset;
         for (size_t i = 0; i < count; ++i) {
             result ^= (size_t)first[i];
@@ -288,7 +284,7 @@ template <> struct hash<Type>                \
     template <>
     struct hash<float> {
         size_t operator()(const float &val) {
-            return val == 0.0f ? 0 : bitwise_hash((const unsigned char *)&val, sizeof(float));
+            return val == 0.0f ? 0 : bitwise_hash((const unsigned char*)&val, sizeof(float));
         }
     };
 
@@ -302,10 +298,9 @@ template <> struct hash<Type>                \
     template <>
     struct hash<long double> {
         size_t operator()(const long double &val) {
-            return val == 0.0f ? 0 : bitwise_hash((const unsigned char *)&val, sizeof(long double)));
+            return val == 0.0f ? 0 : bitwise_hash((const unsigned char *)&val, sizeof(long double));
         }
     };
 
-    */
 } // namespace mystl;
 #endif //TINYSTL_FUNCTIONAL_H

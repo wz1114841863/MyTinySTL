@@ -2,6 +2,7 @@
 
 #include "test_util.h"
 #include "test_allocator.h"
+#include "test_functional.h"
 
 void test_utils() {
     // 测试utils.h中定义的: move, forward, swap, pair
@@ -18,7 +19,17 @@ void test_alloc() {
     test_alloc_02();
 }
 
+void test_func() {
+    std::cout << "测试mystl::alloc" << std::endl;
+    test_functional_00();
+    test_functional_01();
+    test_functional_02();
+    test_functional_03();
+    test_functional_04();
+    test_functional_05();
+}
+
 int main() {
-    test_alloc();
+    test_func();
     return 0;
 }
