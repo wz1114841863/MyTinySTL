@@ -40,6 +40,7 @@ MyTinySTL/
         unitialized.h
         util.h
 Test/
-    util_test.cpp
+    test_allocator.h
+    test_functional.h
     尚待补充
 ```

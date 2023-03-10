@@ -7,7 +7,7 @@
 
 namespace mystl {
     // helper struct, 用类来激发模板参数
-    template <class T, T v>
+    template <typename T, T v>
     struct m_integral_constant {
         static constexpr T value = v;  // 静态常数值
     };
@@ -18,13 +18,13 @@ namespace mystl {
     typedef m_bool_constant<true>  m_true_type;
     typedef m_bool_constant<false> m_false_type;
 
-    template <class T1, class T2>
+    template <typename T1, typename T2>
     struct pair;
 
-    template <class T>
+    template <typename T>
     struct is_pair : mystl::m_false_type {};
 
-    template <class T1, class T2>
+    template <typename T1, typename T2>
     struct is_pair<mystl::pair<T1, T2>> : mystl::m_true_type {};
 }  // namespace mystl
 #endif //TINYSTL_TYPE_TRAITS_H

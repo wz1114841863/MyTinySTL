@@ -19,7 +19,7 @@ namespace mystl {
     template <typename Category, typename T, typename Distance = ptrdiff_t,
             typename Pointer = T*, typename Reference = T&>
     struct iterator {
-        typedef Category        iterator_category;
+        typedef Category        iterator_category;  // 以上迭代器的一种
         typedef T               value_type;
         typedef Pointer         pointer;
         typedef Reference       reference;
@@ -30,7 +30,7 @@ namespace mystl {
     template<typename T>
     struct has_iterator_cat {  // 判断是否有迭代器类别 iterator_category
     private:
-        struct two {
+        struct two {  // 代表两个字符大小
             char a;
             char b;
         };
@@ -59,11 +59,11 @@ namespace mystl {
         return char(0);
     }
 
-    // 不能隐式转换为input_iterator_tag 或 output_iterator_tag
-    template <typename Iterator, bool>
+    // 不能隐式转换为XXX_iterator_tag
+    template <typename Iterator, bool>  // ==template <typename Iter, false>
     struct iterator_traits_impl {};
 
-    // 能隐式转换为input_iterator_
+    // 能隐式转换为XXX_iterator_tag
     template <typename Iterator>
     struct iterator_traits_impl<Iterator, true> {
         typedef typename Iterator::iterator_category iterator_category;
@@ -80,14 +80,14 @@ namespace mystl {
     // 有迭代器，判断是否能隐式转换为input_iterator_tag或output_iterator_tag
     template <typename Iterator>
     struct iterator_traits_helper<Iterator, true>
-        : public iterator_traits_impl<Iterator,
+        :public iterator_traits_impl<Iterator,
         std::is_convertible<typename Iterator::iterator_category, input_iterator_tag>::value ||
         std::is_convertible<typename Iterator::iterator_category, output_iterator_tag>::value> {};
 
     // 萃取迭代器的特性，这里value对应false和true
     template <typename Iterator>
     struct iterator_traits
-    : public iterator_traits_helper<Iterator, has_iterator_cat<Iterator>::value> {};
+    :public iterator_traits_helper<Iterator, has_iterator_cat<Iterator>::value> {};
 
     // 针对原生指针的偏特化版本
     template <typename T>
@@ -108,36 +108,38 @@ namespace mystl {
         typedef ptrdiff_t                   difference_type;
     };
 
-    template <typename T, typename U, bool = has_iterator_cat<iterator_traits<T>>::value>
+    // 判断是否是迭代器类型，且类型是U
+    template <typename T, typename U,
+            bool = has_iterator_cat<iterator_traits<T>>::value>
     struct has_iterator_cat_of
-    : public m_bool_constant<std::is_convertible<
-    typename iterator_traits<T>::iterator_category, U>::value> {};
+    :public m_bool_constant<std::is_convertible<
+        typename iterator_traits<T>::iterator_category, U>::value> {};
 
-    // 萃取某种迭代器
-    template <typename T, class U>
+    template <typename T, typename U>
     struct has_iterator_cat_of<T, U, false> : public m_false_type {};
 
+    // 对每一种迭代器类型，调用has_iterator_cat_of
     template <typename Iter>
-    struct is_input_iterator : public has_iterator_cat_of<Iter, output_iterator_tag> {};
+    struct is_input_iterator :public has_iterator_cat_of<Iter, output_iterator_tag> {};
 
     template <typename Iter>
-    struct is_output_iterator : public has_iterator_cat_of<Iter, output_iterator_tag> {};
+    struct is_output_iterator :public has_iterator_cat_of<Iter, output_iterator_tag> {};
 
     template <typename Iter>
-    struct is_forward_iterator : public has_iterator_cat_of<Iter, forward_iterator_tag> {};
+    struct is_forward_iterator :public has_iterator_cat_of<Iter, forward_iterator_tag> {};
 
     template <typename Iter>
-    struct is_bidirectional_iterator : public has_iterator_cat_of<Iter, bidirectional_iterator_tag> {};
+    struct is_bidirectional_iterator :public has_iterator_cat_of<Iter, bidirectional_iterator_tag> {};
 
     template <typename Iter>
-    struct is_random_access_iterator : public has_iterator_cat_of<Iter, random_access_iterator_tag> {};
+    struct is_random_access_iterator :public has_iterator_cat_of<Iter, random_access_iterator_tag> {};
 
+    // 迭代器可以分为原生指针、input、output三种，这里判断是否是input或output
     template <typename Iterator>
-    struct is_iterator :
-            public m_bool_constant<is_input_iterator<Iterator>::value ||
-            is_output_iterator<Iterator>::value> {};
+    struct is_iterator
+    :public m_bool_constant<is_input_iterator<Iterator>::value || is_output_iterator<Iterator>::value> {};
 
-    // 萃取某个迭代器的 category
+    // 萃取某个迭代器的 category，若传入的不是迭代器，会报错
     template <typename Iterator>
     typename iterator_traits<Iterator>::iterator_category
     iterator_category(const Iterator&) {
@@ -145,15 +147,15 @@ namespace mystl {
         return Category();
     }
 
-    //萃取某个迭代器的 distance_type
-    template <class Iterator>
+    // 萃取某个迭代器的 distance_type
+    template <typename Iterator>
     typename iterator_traits<Iterator>::difference_type*
     distance_type(const Iterator&) {
-        return static_cast<typename iterator_traits<Iterator>::value_type*>(0);
+        return static_cast<typename iterator_traits<Iterator>::difference_type*>(0);
     }
 
-    // 萃取某个迭代器的value_type
-    template <class Iterator>
+    // 萃取某个迭代器的 value_type
+    template <typename Iterator>
     typename iterator_traits<Iterator>::value_type*
     value_type(const Iterator&) {
         return static_cast<typename iterator_traits<Iterator>::value_type*>(0);
@@ -171,13 +173,14 @@ namespace mystl {
         }
         return n;
     }
-    // random_access_iterator_tag
+    // 针对random_access_iterator_tag的特化版本
     template <typename RandomIter>
     typename iterator_traits<RandomIter>::difference_type
     distance_dispatch(RandomIter first, RandomIter last, random_access_iterator_tag) {
         return last - first;
     }
 
+    // 封装 distance
     template <typename InputIterator>
     typename iterator_traits<InputIterator>::difference_type
     distance(InputIterator first, InputIterator last) {
@@ -188,17 +191,16 @@ namespace mystl {
     // advance 的 input_iterator_tag 的版本
     template <class InputIterator, class Distance>
     void advance_dispatch(InputIterator& i, Distance n, input_iterator_tag) {
-        while (n--)
-            ++i;
+        while (n--) { ++i; }
     }
 
     // advance 的 bidirectional_iterator_tag 的版本
     template <class BidirectionalIterator, class Distance>
     void advance_dispatch(BidirectionalIterator& i, Distance n, bidirectional_iterator_tag) {
         if (n >= 0)
-            while (n--)  ++i;
+            while (n--)  { ++i; }
         else
-            while (n++)  --i;
+            while (n++)  { --i; }
     }
 
     // advance 的 random_access_iterator_tag 的版本
@@ -207,10 +209,12 @@ namespace mystl {
         i += n;
     }
 
+    // 封装 advance
     template <class InputIterator, class Distance>
     void advance(InputIterator& i, Distance n) {
         advance_dispatch(i, n, iterator_category(i));
     }
+
 
     // 模板类：reverse_iterator
     // 代表反向迭代器，使前进为后退，后退为前进
@@ -234,7 +238,7 @@ namespace mystl {
         // 构造函数
         reverse_iterator() = default;
         explicit reverse_iterator(iterator_type i) :current(i) {}
-        reverse_iterator(const self& rhs) :current(rhs.current) {}
+        reverse_iterator(const self &rhs) :current(rhs.current) {}
 
     public:
         // 取出对应正向迭代器
@@ -295,7 +299,7 @@ namespace mystl {
     };
 
     // 重载 operator-
-    template <class Iterator>
+    template <typename Iterator>
     typename reverse_iterator<Iterator>::difference_type
     operator- (const reverse_iterator<Iterator> &lhs,
             const reverse_iterator<Iterator> &rhs) {
@@ -303,7 +307,7 @@ namespace mystl {
     }
 
     // 重载比较操作符
-    template <class Iterator>
+    template <typename Iterator>
     bool operator==(const reverse_iterator<Iterator> &lhs,
             const reverse_iterator<Iterator> &rhs) {
         return lhs.base() == rhs.base();
