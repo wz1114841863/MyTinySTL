@@ -60,9 +60,9 @@ namespace mystl {
         allocator_type get_allocator() { return data_allocator(); }
 
     private:
-        iterator begin_;  // 记录目前使用空间的头部
-        iterator end_;  // 记录目前使用空间的尾部
-        iterator cap_;  // 表示目前储存空间的尾部
+        iterator begin_;    // 记录目前使用空间的头部
+        iterator end_;      // 记录目前使用空间的尾部
+        iterator cap_;      // 表示目前储存空间的尾部
 
     public:
         // 构造, 复制, 移动, 析构

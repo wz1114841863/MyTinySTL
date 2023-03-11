@@ -82,11 +82,11 @@ void test_move_1() {
 }
 
 // function with lvalue and rvalue reference overloads:
-void overloaded(const int& x) {
+void overloaded(const int &x) {
     std::cout << "[lvalue]: " << x << std::endl;
 }
 
-void overloaded(int&& x) {
+void overloaded(int &&x) {
     std::cout << "[rvalue]: " << x << std::endl;
 }
 

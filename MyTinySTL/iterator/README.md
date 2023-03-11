@@ -73,12 +73,8 @@
    typename iterator_traits<Iterator>::iterator_category
    iterator_category(const Iterator&);
    
-   // 针对不同迭代器类型，实现对应的
-   distance、advance、
-   
-   // reverse_iterator
-   // 迭代器适配器
-   // 
+   // 针对不同迭代器类型，实现对应的 
+   distance、advance函数
 ```
 
     
