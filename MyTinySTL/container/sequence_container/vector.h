@@ -91,7 +91,7 @@ namespace mystl {
 
         // 移动构造函数, 因为肯定会改变传入对象，所以和拷贝构造函数不同，参数不能是const
         vector(vector &&rhs) noexcept
-                :begin_(rhs.begin_), end_(rhs.end_), cap_(rhs.cap_) {
+        :begin_(rhs.begin_), end_(rhs.end_), cap_(rhs.cap_) {
             rhs.begin_ = nullptr;
             rhs.end = nullptr;
             rhs.cap = nullptr;
@@ -111,7 +111,7 @@ namespace mystl {
         // 初始化列表赋值
         vector &operator=(std::initializer_list<value_type> ilist) {
             vector tmp(ilist.begin(), ilist.end());
-            swap(tmp);
+            swap(tmp);  // 交换后，tmp离开作用域时会销毁，调用析构函数，安全
             return *this;
         }
 
@@ -122,26 +122,28 @@ namespace mystl {
 
     public:
         // 迭代器相关操作
-        iterator begin() noexcept { return begin_; }
-        const_iterator begin() const noexcept { return begin_; }
-        iterator end() noexcept { return end_; }
-        const_iterator end() noexcept { return end_; }
+        iterator        begin()       noexcept  { return begin_; }
+        const_iterator  begin() const noexcept  { return begin_; }
+        iterator        end()         noexcept  { return end_; }
+        const_iterator  end()         noexcept  { return end_; }  // 因为end_指向的空间不能使用，不用const
 
-        reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
-        const_reverse_iterator rbegin() const noexcept { return const_reverse_iterator(end()); }
-        reverse_iterator rend() noexcept { return reverse_iterator(begin()); }
-        const_reverse_iterator const_rend() const noexcept { return const_reverse_iterator(begin()); }
+        reverse_iterator        rbegin()           noexcept  { return reverse_iterator(end()); }
+        const_reverse_iterator  rbegin()     const noexcept  { return const_reverse_iterator(end()); }
+        reverse_iterator        rend()             noexcept  { return reverse_iterator(begin()); }
+        const_reverse_iterator  const_rend() const noexcept  { return const_reverse_iterator(begin()); }
 
-        const_iterator cbegin() const noexcept { return begin(); }
-        const_iterator cend() const noexcept { return end(); }
+        const_iterator         cbegin()  const noexcept { return begin(); }
+        const_iterator         cend()    const noexcept { return end(); }
         const_reverse_iterator crbegin() const noexcept { return rbegin(); }
-        const_reverse_iterator crend() const noexcept { return rend(); }
+        const_reverse_iterator crend()   const noexcept { return rend(); }
 
         // 容量相关操作
-        bool empty() const noexcept { return begin_ == end_; }
-        size_type size() const noexcept { return static_cast<size_type>(end_ - begin_); }
+        // 因为size_t是unsigned，所以将-1强制转换为unsigned会得到这个类型的最大数
+        bool      empty()    const noexcept { return begin_ == end_; }
+        size_type size()     const noexcept { return static_cast<size_type>(end_ - begin_); }
         size_type max_size() const noexcept { return static_cast<size_type>(-1) / sizeof(T); }
         size_type capacity() const noexcept { return static_cast<size_type>(cap_ - begin_); }
+
         void reserve(size_type n);
         void shrink_to_fit();
 
@@ -220,10 +222,10 @@ namespace mystl {
         void emplace_back(Args&& ...args);
 
         // push_back / pop_back
-        void push_back(const value_type& value);
+        void push_back(const value_type &value);
 
-        void push_back(value_type&& value) {
-            emplace_back(mystl::move(value));
+        void push_back(value_type &&value) {
+            emplace_back(mystl::move(value));  // 这里能不能用mystl::forward();
         }
 
         void pop_back();
@@ -311,18 +313,18 @@ namespace mystl {
      // 复制赋值操作符
     template <typename T>
     vector<T> &vector<T>::operator=(const vector &rhs) {
-        if (this != &rhs) {  // 不处理自己给自己赋值
+        if (this != &rhs) {                             // 不处理自己给自己赋值
             const auto len = rhs.size();
-            if (len > capacity()) {  // 当前vector容量不够，需要扩容
+            if (len > capacity()) {                     // 当前vector容量不够，需要扩容
                 vector tmp(rhs.begin(), rhs.end());
-                swap(tmp);  // this 和 另一个vector互换
-            }else if (size() >= len) {  //当前vector内容比rhs长，需要将当前vector多余的内容析构
+            swap(tmp);                              // this 和 另一个vector互换
+            }else if (size() >= len) {                 // 当前vector内容比rhs长，需要将当前vector多余的内容析构
                 auto i = mystl::copy(rhs.begin(), rhs.end(), begin());
-                data_allocator::destroy(i, end_);  //析构范围内的元素，但并不会释放空间
+                data_allocator::destroy(i, end_);      // 析构范围内的元素，但并不会释放空间
                 end_ = begin_ + len;
             }else {
                 mystl::copy(rhs.begin(), rhs.begin() + size(), begin_);
-                mystl::uninitialized_copy(rhs.begin() + size(), rhs.end(), end_);  //将多余部分置零
+                mystl::uninitialized_copy(rhs.begin() + size(), rhs.end(), end_);
                 cap_ = end_ = begin_ + len;
             }
         }
@@ -389,8 +391,7 @@ namespace mystl {
             ++end_;
         }else if (end_ != cap_) {  // 还有未使用空间
             auto new_end = end_;
-            // 为什么要单独构造而不是整体搬移
-            data_allocator::construct(mystl::address_of(*end_), *(end_ - 1));
+            data_allocator::construct(mystl::address_of(*end_), *(end_ - 1));  // 先对end_执行构造
             ++new_end;
             mystl::copy_backward(xpos, end_ - 1, end_);
             *xpos = value_type(mystl::forward<Args>(args)...);  // 数据搬运操作
@@ -470,7 +471,7 @@ namespace mystl {
     typename vector<T>::iterator vector<T>::erase(const_iterator pos) {
         MYSTL_DEBUG(pos >= begin() && pos < end());
         iterator xpos = begin_ + (pos - begin());  // 为什么不用强制转换了？
-        mystl::move(xpos + 1, end_, xpos);
+        mystl::move(xpos + 1, end_, xpos);  // 对应哪个重载函数
         data_allocator::destroy(end_ - 1);
         --end_;
         return xpos;
@@ -622,7 +623,7 @@ namespace mystl {
             *cur = *first;
         }
 
-        //如果size比迭代器范围大，说明后面还又内容，应该删掉
+        //如果size比迭代器范围大，说明后面还有内容，应该删掉
         if (first == last) {
             erase(cur, end_);
         } else {  //继续复制迭代器范围内的元素
@@ -712,7 +713,7 @@ namespace mystl {
             if (after_elems > n) {
                 mystl::uninitialized_copy(end_ - n, end_, end_);
                 end_ += n;
-                mystl::move_backward(pos, old_end - n, old_end);
+                mystl::move_backward(pos, old_end - n, old_end);  // 这里为什么用move
                 mystl::uninitialized_fill_n(pos, n, value_copy);
             }else {
                 end_ = mystl::uninitialized_fill_n(end_, n - after_elems, value_copy);
@@ -792,6 +793,7 @@ namespace mystl {
             data_allocator::deallocate(new_begin, size);
             throw;
         }
+        // 前面用的是move，所以不能再调用析构函数
         data_allocator::deallocate(begin_, cap_ - begin_);
         begin_ = new_begin;
         end_ = begin_ + size;
