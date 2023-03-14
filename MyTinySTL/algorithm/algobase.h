@@ -356,7 +356,7 @@ namespace mystl {
     }
 
     template <typename OutputIter, typename Size, typename T>
-    OutputIter fill_n(OutputIter first, Size n, const T& value) {
+    OutputIter fill_n(OutputIter first, Size n, const T &value) {
         return unchecked_fill_n(first, n, value);
     }
     /*****************************************************************************************/
@@ -376,7 +376,7 @@ namespace mystl {
     template <typename ForwardIter, typename T>
     void fill_cat(ForwardIter first, ForwardIter last, const T &value,
                   mystl::random_access_iterator_tag) {
-        fill_n(first, last - first, value);
+        mystl::fill_n(first, last - first, value);
     }
 
     template <typename ForwardIter, typename T>
@@ -393,7 +393,7 @@ namespace mystl {
     // (4)如果同时到达 last1 和 last2 返回 false
     /*****************************************************************************************/
     template <typename InputIter1, typename InputIter2>
-    bool llexicographical_compare(InputIter1 first1, InputIter1 last1,
+    bool lexicographical_compare(InputIter1 first1, InputIter1 last1,
                                   InputIter2 first2, InputIter2 last2) {
         // 任何一个序列到达尾端就结束，否则元素一一进行对比
         for (; first1 != last1 && first2 != last2; ++first1, ++first2) {
@@ -409,7 +409,7 @@ namespace mystl {
     }
 
     template <typename InputIter1, typename InputIter2, typename Compared>
-    bool llexicographical_compare(InputIter1 first1, InputIter1 last1,
+    bool lexicographical_compare(InputIter1 first1, InputIter1 last1,
                                   InputIter2 first2, InputIter2 last2,
                                   Compared comp) {
         for (; first1 != last1 && first2 != last2; ++first1, ++first2) {

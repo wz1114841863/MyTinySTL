@@ -46,16 +46,16 @@ namespace mystl {
     template <typename ForwardIter>
     void destroy_cat(ForwardIter , ForwardIter , std::true_type) {}
 
+    template <typename Ty>
+    void destroy(Ty *pointer) {
+        destroy_one(pointer, std::is_trivially_destructible<Ty>{});
+    }
+
     template <typename ForwardIter>
     void destroy_cat(ForwardIter first, ForwardIter last, std::false_type) {
         for (; first != last; ++first) {
             destroy(& *first);  // 回调destroy(Ty *pointer)
         }
-    }
-
-    template <typename Ty>
-    void destroy(Ty *pointer) {
-        destroy_one(pointer, std::is_trivially_destructible<Ty>{});
     }
 
     template <typename ForwardIter>

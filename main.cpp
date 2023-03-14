@@ -4,6 +4,7 @@
 #include "test_allocator.h"
 #include "test_functional.h"
 #include "test_iterator.h"
+#include "test_vector.h"
 
 void test_utils() {
     // 测试utils.h中定义的: move, forward, swap, pair
@@ -36,7 +37,12 @@ void test_iter() {
     test_iterator_03();
 }
 
+void test_vector() {
+    test_vector_01();
+    test_vector_02();
+}
+
 int main() {
-    test_iter();
+    test_vector();
     return 0;
 }

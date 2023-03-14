@@ -164,7 +164,7 @@ namespace mystl{
         return mystl::unchecked_uninit_move(first, last, result,
                                             std::is_trivially_copy_assignable<
                                                     typename iterator_traits<InputIter>::
-                                                            value_tyoe>{});
+                                                            value_type>{});
     }
 
     /*****************************************************************************************/

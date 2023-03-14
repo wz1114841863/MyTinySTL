@@ -93,8 +93,8 @@ namespace mystl {
         vector(vector &&rhs) noexcept
         :begin_(rhs.begin_), end_(rhs.end_), cap_(rhs.cap_) {
             rhs.begin_ = nullptr;
-            rhs.end = nullptr;
-            rhs.cap = nullptr;
+            rhs.end_ = nullptr;
+            rhs.cap_ = nullptr;
         }
 
         // 列表初始化
@@ -125,7 +125,7 @@ namespace mystl {
         iterator        begin()       noexcept  { return begin_; }
         const_iterator  begin() const noexcept  { return begin_; }
         iterator        end()         noexcept  { return end_; }
-        const_iterator  end()         noexcept  { return end_; }  // 因为end_指向的空间不能使用，不用const
+        const_iterator  end()   const noexcept  { return end_; }  // 因为end_指向的空间不能使用，不用const
 
         reverse_iterator        rbegin()           noexcept  { return reverse_iterator(end()); }
         const_reverse_iterator  rbegin()     const noexcept  { return const_reverse_iterator(end()); }
@@ -160,12 +160,12 @@ namespace mystl {
         }
 
         reference at(size_type n) {
-            THROW_OUT_OF_RANGE_IF(n < size(), "vector<T>::at() subscript out of range");
+            THROW_OUT_OF_RANGE_IF(n >= size(), "vector<T>::at() subscript out of range");
             return (*this)[n];
         }
 
         const_reference at(size_type n) const {
-            THROW_OUT_OF_RANGE_IF(n < size(), "vector<T>::at() subscript out of range");
+            THROW_OUT_OF_RANGE_IF(n >= size(), "vector<T>::at() subscript out of range");
             return (*this)[n];
         }
 
@@ -203,7 +203,7 @@ namespace mystl {
             fill_assign(n, value);
         }
 
-        typename <typename Iter, typename std::enable_if<
+        template <typename Iter, typename std::enable_if<
                 mystl::is_input_iterator<Iter>::value, int>::type = 0>
         void assign(Iter first, Iter last) {
             MYSTL_DEBUG(!(last < first));
@@ -264,7 +264,7 @@ namespace mystl {
         void reverse() { mystl::reverse(begin(), end()); }
 
         // swap
-        void swap(vector& rhs) noexcept;
+        void swap(vector &rhs) noexcept;
 
     private:
         // helper functions
@@ -379,7 +379,7 @@ namespace mystl {
     // 将参数传递给T的构造函数，而不是包含参数的对象，emplace使用这些参数在内存空间中直接构造元素
     template <typename T>
     template <typename ...Args>
-    vector<T>::iterator vector<T>::emplace(const_iterator pos, Args&& ...args) {
+    typename vector<T>::iterator vector<T>::emplace(const_iterator pos, Args&& ...args) {
         MYSTL_DEBUG(pos >= begin() && pos <= end());
         auto xpos = const_cast<iterator>(pos);  // 去const
         const size_type n = xpos - begin_;
@@ -549,7 +549,7 @@ namespace mystl {
     template <typename T>
     void vector<T>::fill_init(size_type n, const value_type &value) {
         const size_type init_size = mystl::max(static_cast<size_type>(16), n);
-        init_sapce(n, init_size);
+        init_space(n, init_size);
         mystl::uninitialized_fill_n(begin_, n, value);
     }
 
@@ -559,7 +559,7 @@ namespace mystl {
     void vector<T>::range_init(Iter first, Iter last) {
         const size_type len = mystl::distance(first, last);
         const size_type init_size = mystl::max(len, static_cast<size_type>(16));
-        init_space(init_size);
+        init_space(len, init_size);
         mystl::uninitialized_copy(first, last, begin_);
     }
 
@@ -573,7 +573,7 @@ namespace mystl {
     // get_new_cap 函数
     // 获取能增加的容量
     template <typename T>
-    vector<T>::size_type vector<T>::get_new_cap(size_type add_size) {
+    typename vector<T>::size_type vector<T>::get_new_cap(size_type add_size) {
         // 现有容量大小
         const auto old_size = capacity();
         // 如果现有容量+要增加的容量 大于 最大容量 直接异常

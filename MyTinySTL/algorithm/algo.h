@@ -14,6 +14,7 @@
 #include "memory.h"
 #include "heap_algo.h"
 #include "functional.h"
+#include "reverse_iterator.h"
 
 namespace mystl {
     /*****************************************************************************************/
