@@ -1,19 +1,10 @@
 #include <iostream>
-
-#include "test_util.h"
+#include "test_utils.h"
 #include "test_allocator.h"
 #include "test_functional.h"
 #include "test_iterator.h"
 #include "test_vector.h"
 
-void test_utils() {
-    // 测试utils.h中定义的: move, forward, swap, pair
-    test_move();
-    test_move_1();
-    test_forward();
-    test_swap();
-    test_pair();
-}
 
 void test_alloc() {
     std::cout << "测试mystl::alloc" << std::endl;
@@ -42,7 +33,18 @@ void test_vector() {
     test_vector_02();
 }
 
+void test_utils() {
+    test_util_01();
+    test_util_02();
+    test_util_03();
+    test_util_04();
+    test_util_05();
+    test_util_06();
+    test_util_07();
+    test_util_08();
+}
+
 int main() {
-    test_vector();
+    test_utils();
     return 0;
 }

@@ -12,6 +12,7 @@ namespace mystl{
     /*****************************************************************************************/
     // uninitialized_copy
     // 把 [first, last) 上的内容复制到以 result 为起始处的空间，返回复制结束的位置
+    // 具有 "commit or rollback" 语意
     /*****************************************************************************************/
     template <typename InputIter, typename ForwardIter>
     ForwardIter unchecked_uninit_copy(InputIter first, InputIter last, ForwardIter result, std::true_type) {

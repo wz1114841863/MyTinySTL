@@ -43,5 +43,7 @@ Test/
     test_allocator.h
     test_functional.h
     test_iterator.h
+    test_vector.h
+    test_util.h
     尚待补充
 ```

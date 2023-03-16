@@ -27,7 +27,7 @@ namespace mystl {
         }
         while (len > 0) {
             T *tmp = static_cast<T *>(malloc(static_cast<size_t>(len) * sizeof(T)));
-            if (tmp) {
+            if (tmp) {  // 判断是否申请成功
                 return pair<T*, ptrdiff_t>(tmp, len);
             }
             len /= 2;  // 不断缩小申请空间
@@ -40,7 +40,7 @@ namespace mystl {
         return get_buffer_helper(len, static_cast<T*>(0));
     }
 
-    template <class T>
+    template <typename T>
     pair<T*, ptrdiff_t> get_temporary_buffer(ptrdiff_t len, T*) {
         return get_buffer_helper(len, static_cast<T*>(0));
     }
@@ -48,16 +48,17 @@ namespace mystl {
     template <class T>
     void release_temporary_buffer(T* ptr) {
         free(ptr);
+        ptr = nullptr;
     }
 
-    // 类模板 : temporary_buffer
+    // 模板类 : temporary_buffer
     // 进行临时缓冲区的申请与释放
     template <typename ForwardIterator, typename T>
     class temporary_buffer {
     private:
         ptrdiff_t original_len;  // 缓冲区申请的大小
         ptrdiff_t len;  // 缓冲区实际的大小
-        T* buffer;  // 指向缓冲区的指针
+        T *buffer;  // 指向缓冲区的指针
 
     public:
         // 构造、析构函数
@@ -68,22 +69,21 @@ namespace mystl {
             free(buffer);
         }
 
+        temporary_buffer(const temporary_buffer&) = delete;
+        void operator=(const temporary_buffer&) = delete;
+
     public:
-        ptrdiff_t size()            const noexcept {return len;}
-        ptrdiff_t requested_size()  const noexcept {return original_len;}
-        T *begin()                      noexcept {return buffer;}
-        T *end()                        noexcept {return buffer + len;}
+        ptrdiff_t   size()            const noexcept { return len; }
+        ptrdiff_t   requested_size()  const noexcept { return original_len; }
+        T           *begin()                noexcept { return buffer; }
+        T           *end()                  noexcept { return buffer + len; }
 
     private:
         void allocate_buffer();
-        void initialize_buffer(const T&, std::true_type) {}
-        void initialize_buffer(const T& value, std::false_type) {
+        void initialize_buffer(const T&, std::true_type) {}  // 构造函数什么也不做
+        void initialize_buffer(const T &value, std::false_type) {
             mystl::uninitialized_fill_n(buffer, len, value);
         }
-
-    private:
-        temporary_buffer(const temporary_buffer&);
-        void operator=(const temporary_buffer&);
     };
 
     // 构造函数
@@ -91,8 +91,9 @@ namespace mystl {
     temporary_buffer<ForwardIterator, T>::
     temporary_buffer(ForwardIterator first, ForwardIterator last) {
         try {
-            len = mystl::distance(first, last);
-            allocate_buffer();
+            original_len = len;
+            len = mystl::distance(first, last);  // 计算分配的空间大小
+            allocate_buffer();  // 分配空间，不一定等于origin_len
             if (len > 0) {
                 initialize_buffer(*first, std::is_trivially_default_constructible<T>());
             }
@@ -106,7 +107,6 @@ namespace mystl {
     // allocate_buffer
     template <typename ForwardIterator, typename T>
     void temporary_buffer<ForwardIterator, T>::allocate_buffer() {
-        original_len = len;
         if (len > static_cast<ptrdiff_t>(INT_MAX / sizeof(T))) {
             len = INT_MAX / sizeof(T);
         }
