@@ -4,7 +4,7 @@
 #include "test_functional.h"
 #include "test_iterator.h"
 #include "test_vector.h"
-
+#include "test_algorithm.h"
 
 void test_alloc() {
     std::cout << "测试mystl::alloc" << std::endl;
@@ -44,7 +44,11 @@ void test_utils() {
     test_util_08();
 }
 
+void test_algorithm() {
+    // test_algorithm_01();
+    test_algorithm_02();
+}
 int main() {
-    test_utils();
+    test_algorithm();
     return 0;
 }
