@@ -23,7 +23,7 @@ namespace mystl {
     }
 
     template <typename RandomIter, typename Distance>
-    void push_heap_d(RandomIter first, RandomIter last, Distance) {
+    void push_heap_d(RandomIter first, RandomIter last, Distance*) {
         // 根据隐式表达法的结构特性，last-1表示新插入节点。
         mystl::push_heap_aux(first, (last - first) - 1, static_cast<Distance>(0), *(last - 1));
     }
@@ -122,9 +122,8 @@ namespace mystl {
     }
 
     // 先将首值调至尾节点，然后调整[first, last - 1)使之重新成为一个 max-heap
-    template <typename RandomIter, typename T,
-            typename Distance, typename Compared>
-    void push_heap_aux(RandomIter first, RandomIter last, RandomIter result,
+    template <typename RandomIter, typename T, typename Distance, typename Compared>
+    void pop_heap_aux(RandomIter first, RandomIter last, RandomIter result,
                        T value, Distance *, Compared comp) {
         *result = *first;
         mystl::adjust_heap(first, static_cast<Distance>(0), last - first, value, comp);
@@ -175,7 +174,6 @@ namespace mystl {
             }
             --holeIndex;  // 头部向前的一个节点
         }
-
     }
 
     template <typename RandomIter>

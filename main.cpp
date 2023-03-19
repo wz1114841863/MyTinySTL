@@ -46,8 +46,11 @@ void test_utils() {
 
 void test_algorithm() {
     // test_algorithm_01();
-    test_algorithm_02();
+    // test_algorithm_02();
+    // test_algorithm_03();
+    test_algorithm_04();
 }
+
 int main() {
     test_algorithm();
     return 0;

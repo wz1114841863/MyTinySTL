@@ -90,7 +90,7 @@ namespace mystl {
     }
 
     // 特化版本,判断迭代器指向类型有没有定义拷贝赋值运算符
-    // 如果没有定义直接通过memmove拷贝效率最高，否则就调用unchecked_copy_cat
+    // 如果没有定义且类型一致直接通过memmove拷贝效率最高，否则就调用unchecked_copy_cat
     template <typename Tp, typename Up>
     typename std::enable_if<
             std::is_same<typename std::remove_const<Tp>::type, Up>::value &&
@@ -145,7 +145,7 @@ namespace mystl {
     typename std::enable_if<
             std::is_same<typename std::remove_const<Tp>::type, Up>::value &&
             std::is_trivially_copy_assignable<Up>::value, Up*>::type
-    unchecked_copy_backward(Tp* first, Tp* last, Up* result) {
+    unchecked_copy_backward(Tp *first, Tp *last, Up *result) {
         const auto n = static_cast<size_t>(last - first);
         if (n != 0) {
             result -= n;
@@ -166,9 +166,9 @@ namespace mystl {
     /*****************************************************************************************/
     template <typename InputIter, typename OutputIter, typename UnaryPredicate>
     OutputIter copy_if(InputIter first, InputIter last, OutputIter result, UnaryPredicate unary_pred) {
-        for (; first != last; ++first, ++result) {
+        for (; first != last; ++first) {
             if (unary_pred(*first)) {
-                *result = *first;
+                *result++ = *first;
             }
         }
         return result;
@@ -276,7 +276,7 @@ namespace mystl {
     template <typename BidirectionalIter1, typename BidirectionalIter2>
     BidirectionalIter2 unchecked_move_backward(BidirectionalIter1 first, BidirectionalIter1 last,
                                                    BidirectionalIter2 result) {
-        return unchecked_copy_backward_cat(first, last, result, iterator_category(first));
+        return unchecked_move_backward_cat(first, last, result, iterator_category(first));
     }
 
     // 特化版本
@@ -359,6 +359,7 @@ namespace mystl {
     OutputIter fill_n(OutputIter first, Size n, const T &value) {
         return unchecked_fill_n(first, n, value);
     }
+
     /*****************************************************************************************/
     // fill
     // 为 [first, last)区间内的所有元素填充新值
@@ -380,7 +381,7 @@ namespace mystl {
     }
 
     template <typename ForwardIter, typename T>
-    void fill(ForwardIter first, ForwardIter last, const T& value) {
+    void fill(ForwardIter first, ForwardIter last, const T &value) {
         fill_cat(first, last, value, iterator_category(first));
     }
 
