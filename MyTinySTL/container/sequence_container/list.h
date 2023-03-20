@@ -50,22 +50,23 @@ namespace mystl {
             return static_cast<node_ptr>(self());
         }
 
-        base_ptr self() {
+        virtual base_ptr self() {
             return static_cast<base_ptr>(&*this);
         }
     };
 
     // list 数据节点
     template <typename T>
-    struct list_node : public list_node_base<T> {
+    struct list_node :public list_node_base<T> {
         typedef typename node_traits<T>::base_ptr base_ptr;
         typedef typename node_traits<T>::node_ptr node_ptr;
 
         T value;  // 数据域
 
+        // 构造函数
         list_node() = default;
         list_node(const T &v):value(v) {}
-        list_node(T &&V):value(mystl::move(v)) {}
+        list_node(T &&v):value(mystl::move(v)) {}
 
         base_ptr as_base() {
             return static_cast<base_ptr>(&*this);
@@ -95,8 +96,8 @@ namespace mystl {
         list_iterator(const list_iterator &rhs):node_(rhs.node_) {}
 
         // 重载操作符
-        reference operator*() const { return node_->as_node()->value; }
-        pointer operator->() const { return &(operator*()); }
+        reference operator*()   const { return node_->as_node()->value; }
+        pointer   operator->()  const { return &(operator*()); }
 
         self &operator++() {
             MYSTL_DEBUG(node_ != nullptr);
@@ -141,11 +142,11 @@ namespace mystl {
         list_const_iterator() = default;
         list_const_iterator(base_ptr x):node_(x) {}
         list_const_iterator(node_ptr x):node_(x->as_base()) {}
-        list_const_iterator(const list_iterator<T>& rhs):node_(rhs.node_) {}
-        list_const_iterator(const list_const_iterator& rhs):node_(rhs.node_) {}
+        list_const_iterator(const list_iterator<T> &rhs):node_(rhs.node_) {}
+        list_const_iterator(const list_const_iterator &rhs):node_(rhs.node_) {}
 
-        reference operator*() const { return node_->as_node()->value; }
-        pointer operator->() const { return &(operator*()); }
+        reference operator*()  const { return node_->as_node()->value; }  // 多态
+        pointer   operator->() const { return &(operator*()); }
 
         self &operator++() {
             MYSTL_DEBUG(node_ != nullptr);
@@ -205,7 +206,7 @@ namespace mystl {
         allocator_type get_allocator() { return node_allocator(); }
 
     private:
-        base_ptr node_;  // 刻意指向末尾空白节点，实现前闭后开
+        base_ptr  node_;  // 刻意指向末尾空白节点，实现前闭后开
         size_type size_;  // 大小
 
     public:
@@ -222,14 +223,14 @@ namespace mystl {
 
         list(std::initializer_list<T> ilist) { copy_init(ilist.begin(), ilist.end()); }
 
-        list(const list &rhs) { copy_init(ilist.begin(), ilist.end()); }
+        list(const list &rhs) { copy_init(rhs.begin(), rhs.end()); }
 
         list(list &&rhs) noexcept :node_(rhs.node_), size_(rhs.size_) {
             rhs.node_ = nullptr;
             rhs.size_ = 0;
         }
 
-        // 复制赋值运算符
+        // 拷贝赋值运算符
         list &operator=(const list &rhs) {
             if (this != &rhs) {
                 assign(rhs.begin(), rhs.end());
@@ -253,73 +254,33 @@ namespace mystl {
             if (node_) {
                 clear();
                 base_allocator::deallocate(node_);
-                node = nullptr;
+                node_ = nullptr;
                 size_ = 0;
             }
         }
 
     public:
         // 迭代器相关操作
-        iterator begin() noexcept {
-            return node_->next;
-        }
+        iterator        begin()       noexcept { return node_->next; }
+        const_iterator  begin() const noexcept { return node_->next; }
+        iterator        end()         noexcept { return node_; }
+        const_iterator  end()   const noexcept { return node_; }
 
-        const_iterator begin() const noexcept {
-            return node_->next;
-        }
+        reverse_iterator       rbegin()       noexcept{ return reverse_iterator(end()); }
+        const_reverse_iterator rbegin() const noexcept{ return reverse_iterator(end()); }
+        reverse_iterator       rend()         noexcept{ return reverse_iterator(begin()); }
+        const_reverse_iterator rend()   const noexcept{ return reverse_iterator(begin()); }
 
-        iterator end() noexcept {
-            return node_;
-        }
+        const_iterator cbegin() const noexcept{ return begin(); }
+        const_iterator cend()   const noexcept{ return end(); }
 
-        const_iterator end() const noexcept{
-            return node_;
-        }
-
-        reverse_iterator rbegin() noexcept{
-            return reverse_iterator(end());
-        }
-
-        const_reverse_iterator rbegin() const noexcept{
-            return reverse_iterator(end());
-        }
-
-        reverse_iterator rend() noexcept{
-            return reverse_iterator(begin());
-        }
-
-        const_reverse_iterator rend() const noexcept{
-            return reverse_iterator(begin());
-        }
-
-        const_iterator cbegin() const noexcept{
-            return begin();
-        }
-
-        const_iterator cend() const noexcept{
-            return end();
-        }
-
-        const_reverse_iterator crbegin() const noexcept{
-            return rbegin();
-        }
-
-        const_reverse_iterator crend() const noexcept{
-            return rend();
-        }
+        const_reverse_iterator crbegin() const noexcept{ return rbegin(); }
+        const_reverse_iterator crend()   const noexcept{ return rend(); }
 
         // 容量相关操作
-        bool empty() const noexcept {
-            return node_->next == node_;
-        }
-
-        size_type size() const noexcept {
-            return size_t;
-        }
-
-        size_type max_size() const noexcept {
-            return static_cast<size_type>(-1);
-        }
+        bool      empty()    const noexcept { return node_->next == node_; }
+        size_type size()     const noexcept { return size_; }
+        size_type max_size() const noexcept { return static_cast<size_type>(-1); }
 
         // 访问元素相关操作
         reference front() {
@@ -577,7 +538,7 @@ namespace mystl {
     template <typename T>
     typename list<T>::iterator
     list<T>::erase(const_iterator first, const_iterator last) {
-        if (!first != last) {
+        if (first != last) {
             unlink_nodes(first.node_, last.node_->prev);
             while (first != last) {
                 auto cur = first.node_;
@@ -594,7 +555,7 @@ namespace mystl {
     void list<T>::clear() {
         if (size_ != 0) {
             auto cur = node_->next;
-            for (bast_ptr next = cur->next; cur != node_; cur = next, next = cur->next) {
+            for (base_ptr next = cur->next; cur != node_; cur = next, next = cur->next) {
                 destroy_node(cur->as_node());
             }
         }
@@ -630,7 +591,7 @@ namespace mystl {
     void list<T>::splice(const_iterator pos, list &other) {
         MYSTL_DEBUG(this != other);
         if (!other.empty()) {
-            THROW_LENGTH_ERROR_IF(size_ > max_size() - x.size_,
+            THROW_LENGTH_ERROR_IF(size_ > max_size() - other.size_,
                                   "list<T>'s size too big");
             auto f = other.node_->next;
             auto l = other.node_->prev;
@@ -663,7 +624,7 @@ namespace mystl {
     template <typename T>
     void list<T>::splice(const_iterator pos, list &other,
                          const_iterator first, const_iterator last) {
-        if (first != last && this != &x) {
+        if (first != last && this != &other) {
             size_type n = mystl::distance(first, last);
             THROW_LENGTH_ERROR_IF(size_ > max_size() - n,
                                   "list<T>'s size too big");
@@ -685,7 +646,7 @@ namespace mystl {
     template <typename T>
     template <typename UnaryPredicate>
     void list<T>::remove_if(UnaryPredicate pred) {
-        aufo f = begin();
+        auto f = begin();
         auto l = end();
         for (auto next = f; f != l; f = next) {
             ++next;
@@ -735,7 +696,7 @@ namespace mystl {
             if (comp(*f2, *f1)) {  // 接入使 comp 为 true 的一段区间
                 auto next = f2;
                 ++next;
-                for (next != l2 && comp(*next, *f1); ++next)
+                for (;next != l2 && comp(*next, *f1); ++next)
                     ;
                 auto f = f2.node_;
                 auto l = next.node_->prev;
@@ -896,7 +857,7 @@ namespace mystl {
     void list<T>::fill_assign(size_type n, const value_type &value) {
         auto i = begin();
         auto e = end();
-        for (; n > 0 && i != e; --n. ++i) {
+        for (; n > 0 && i != e; --n, ++i) {
             *i = value;
         }
 

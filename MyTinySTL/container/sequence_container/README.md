@@ -87,3 +87,30 @@ vector:
     
     // 运算符、swap函数重载
 ```
+list.h
+``` 
+    // 将节点分未base_node 和 data_node
+    template <typename T> struct list_node_base;  // 指向前后节点
+    template <typename T> struct list_node;       // 数据节点，继承了base_node
+    
+    // 迭代器、const 迭代器，继承双向迭代器
+    struct list_iterator :public mystl::iterator<mystl::bidirectional_iterator_tag, T> 
+    需要重载 *操作符和->操作符
+    operator++() 返回引用
+    operator++(int) 返回临时对象
+    
+    // list, 双向链表，前闭后开
+    私有成员：node_, size_
+    
+    // 构造函数
+    普通构造函数使用fill_init实现初始化
+    迭代器初始化、花括号初始化、拷贝初始化使用copy_init实现初始虎啊
+    移动构造函数：
+    list(list &&rhs) noexcept :node_(rhs.node_), size_(rhs.size_);
+    
+    list &operator=(const list &rhs);
+    list &operator=(list &&rhs);
+    list &operator=(std::initializer_list<T> ilist);
+    
+    
+```

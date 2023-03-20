@@ -1,10 +1,11 @@
 #include <iostream>
-#include "test_utils.h"
+// #include "test_utils.h"
 #include "test_allocator.h"
 #include "test_functional.h"
 #include "test_iterator.h"
 #include "test_vector.h"
 #include "test_algorithm.h"
+#include "test_list.h"
 
 void test_alloc() {
     std::cout << "测试mystl::alloc" << std::endl;
@@ -33,25 +34,28 @@ void test_vector() {
     test_vector_02();
 }
 
-void test_utils() {
-    test_util_01();
-    test_util_02();
-    test_util_03();
-    test_util_04();
-    test_util_05();
-    test_util_06();
-    test_util_07();
-    test_util_08();
-}
+// void test_utils() {
+//     test_util_01();
+//     test_util_02();
+//     test_util_03();
+//     test_util_04();
+//     test_util_05();
+//     test_util_06();
+//     test_util_07();
+//     test_util_08();
+// }
 
 void test_algorithm() {
-    // test_algorithm_01();
-    // test_algorithm_02();
-    // test_algorithm_03();
+    test_algorithm_01();
+    test_algorithm_02();
+    test_algorithm_03();
     test_algorithm_04();
 }
 
+void test_list() {
+    test_list_01();
+}
 int main() {
-    test_algorithm();
+    test_list();
     return 0;
 }
