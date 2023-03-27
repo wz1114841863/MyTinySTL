@@ -97,3 +97,49 @@ algobase 基础算法：
     // mismatch,平行比较两个序列，找到第一处失配的元素，返回一对迭代器，分别指向两个序列中失配的元素
      mismatch(Inputiter1 first1, Inputiter1 last1, Inputiter2 first2);
 ```
+
+algo.h
+```
+    all_of: 
+    bool all_of(InputIter first, InputIter last, UnaryPredicate unary_pred);
+    
+    any_of:
+    bool any_of(InputIter first, InputIter last, UnaryPredicate unary_pred);
+    
+    none_of:
+    bool none_of(InputIter first, InputIter last, UnaryPredicate unary_pred);
+    
+    count:
+    对[first, last)区间内的元素与给定值进行比较，缺省使用 operator==，返回元素相等的个数
+    
+    count_if:
+    对[first, last)区间内的每个元素都进行一元 unary_pred 操作，返回结果为 true 的个数
+    
+    find:
+    在[first, last)区间内找到等于 value 的元素，返回指向该元素的迭代器
+    
+    find_if:
+    在[first, last)区间内找到第一个令一元操作 unary_pred 为 true 的元素并返回指向该元素的迭代器 
+    
+    find_if_not:
+    在[first, last)区间内找到第一个令一元操作 unary_pred 为 false 的元素并返回指向该元素的迭代器
+    
+    search_n:
+    在[first, last)中查找连续 n 个 value 所形成的子序列，返回一个迭代器指向该子序列的起始处
+    
+    find_end
+    在[first1, last1)区间中查找[first2, last2)最后一次出现的地方，若不存在返回 last1
+    注：这里使用到了反向迭代器对双向迭代器进行优化
+    
+    find_first_of
+    在[first1, last1)中查找[first2, last2)中的某些元素，返回指向第一次出现的元素的迭代器
+    
+    for_each
+    使用一个函数对象 f 对[first, last)区间内的每个元素执行一个 operator() 操作，但不能改变元素内容
+    
+    adjacent_find
+    找出第一对匹配的相邻元素
+    
+    lower_bound
+    在[first, last)中查找第一个不小于 value 的元素，并返回指向它的迭代器，若没有则返回 last
+```

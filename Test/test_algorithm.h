@@ -240,3 +240,129 @@ void test_algorithm_04() {
     std::cout << "tmp.fisrt: "  << *tmp.first  << std::endl;
     std::cout << "tmp.second: " << *tmp.second << std::endl;
 }
+
+class Judge0{
+public:
+    bool operator()(int val) {
+        return val > 3;
+    }
+};
+
+class Judge1{
+public:
+    bool operator()(int val) {
+        return val > 0;
+    }
+};
+
+class Judge2{
+public:
+    bool operator()(int val) {
+        return val > 10;
+    }
+};
+
+class Judge3{
+public:
+    bool operator()(int val1, int val2) {
+        return val1 == val2;
+    }
+};
+
+void test_algorithm_05() {
+    std::cout << "test algo.h " << std::endl;
+    std::cout << "test all of " << std::endl;
+    mystl::vector<int> vec1{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    std::cout << mystl::all_of(vec1.begin(), vec1.end(), Judge0()) << std::endl;
+    std::cout << mystl::all_of(vec1.begin(), vec1.end(), Judge1()) << std::endl;
+
+    std::cout << mystl::any_of(vec1.begin(), vec1.end(), Judge0()) << std::endl;
+    std::cout << mystl::any_of(vec1.begin(), vec1.end(), Judge2()) << std::endl;
+
+    mystl::vector<int> vec2{1, 1, 1, 1, 2, 3, 2, 3, 2, 3, 2, 3, 10};
+    std::cout << mystl::count(vec2.begin(), vec2.end(), 2) << std::endl;
+    std::cout << mystl::count_if(vec2.begin(), vec2.end(), Judge0()) << std::endl;
+
+    auto iter1 = mystl::find(vec2.begin(), vec2.end(), 3);
+    std::cout << "value: " << *iter1 << std::endl;
+    auto iter2 = mystl::find_if(vec2.begin(), vec2.end(), Judge0());
+    std::cout << "value: " << *iter2 << std::endl;
+    auto iter3 = mystl::find_if_not(vec2.begin(), vec2.end(), Judge0());
+    std::cout << "value: " << *iter3 << std::endl;
+
+    mystl::vector<int> vec3{2, 3, 2, 3, 10};
+    auto iter4 = mystl::search(vec2.begin(), vec2.end(), vec3.begin(), vec3.end());
+    if (iter4 != vec2.end()) {
+        std::cout << "search success! " << *iter4 << std::endl;
+    }else {
+        std::cout << "search failed! " << std::endl;
+    }
+
+    mystl::vector<int> vec4{2, 3, 2, 3, 9};
+    auto iter5 = mystl::search(vec2.begin(), vec2.end(), vec4.begin(), vec4.end());
+    if (iter5 != vec2.end()) {
+        std::cout << "search success! " << *iter5 << std::endl;
+    }else {
+        std::cout << "search failed! " << std::endl;
+    }
+
+    auto iter6 = mystl::search(vec2.begin(), vec2.end(), vec3.begin(), vec3.end());
+    if (iter6 != vec2.end()) {
+        std::cout << "search success! " << *iter6 << std::endl;
+    }else {
+        std::cout << "search failed! " << std::endl;
+    }
+
+    auto iter7 = mystl::search_n(vec2.begin(), vec2.end(), 3, 1);
+    if (iter7 != vec2.end()) {
+        std::cout << "search success! " << *iter6 << std::endl;
+    }else {
+        std::cout << "search failed! " << std::endl;
+    }
+
+    mystl::vector<int> vec5{2, 3, 2, 3};
+    auto iter8 = mystl::search(vec2.begin(), vec2.end(), vec5.begin(), vec5.end());
+    if (iter8 != vec2.end()) {
+        std::cout << "search success! " << *iter8 << std::endl;
+    }else {
+        std::cout << "search failed! " << std::endl;
+    }
+
+    auto iter9 = mystl::search(vec2.begin(), vec2.end(), vec5.begin(), vec5.end(), mystl::equal_to<int>());
+    if (iter9 != vec2.end()) {
+        std::cout << "search success! " << *iter9 << std::endl;
+    }else {
+        std::cout << "search failed! " << std::endl;
+    }
+
+    mystl::vector<int> vec6{10, 1, 2, 3, 2, 3};
+    auto iter10 = mystl::find_first_of(vec2.begin(), vec2.end(), vec6.begin(), vec6.end(), mystl::equal_to<int>());
+    if (iter10 != vec2.end()) {
+        std::cout << "search success! " << *iter10 << std::endl;
+    }else {
+        std::cout << "search failed! " << std::endl;
+    }
+
+    auto iter11 = mystl::find_first_of(vec2.begin(), vec2.end(), vec6.begin(), vec6.end());
+    if (iter11 != vec2.end()) {
+        std::cout << "search success! " << *iter11 << std::endl;
+    }else {
+        std::cout << "search failed! " << std::endl;
+    }
+}
+
+void test_algorithm_06() {
+    std::cout << "test algo.h " << std::endl;
+    mystl::vector<int> vec1{10, 9, 8, 7, 6, 5, 4};
+    auto printVal = [](const int &val) {
+        std::cout << val << " ";
+    };
+    mystl::for_each(vec1.begin(), vec1.end(), printVal);
+
+    mystl::vector<int> vec2{10, 9, 8, 8, 7, 6, 6, 5, 4};
+    auto iter1 = mystl::adjacent_find(vec2.begin(), vec2.end());
+    std::cout << "iter1.val: " << *iter1 << std::endl;
+
+    auto iter2 = mystl::lower_bound(vec2.begin(), vec2.end(), 5);
+    std::cout << "iter2.val: " << *iter2 << std::endl;
+}

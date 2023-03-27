@@ -151,7 +151,7 @@ namespace mystl {
                 if (d1 == d2) {
                     return last1;
                 }else {
-                    current1 = ++first1;
+                    current1 = ++first1;  // 移动起始位置
                     current2 = first2;
                     --d1;
                 }
@@ -369,9 +369,9 @@ namespace mystl {
     InputIter find_first_of(InputIter first1, InputIter last1,
                             ForwardIter first2, ForwardIter last2) {
         for (; first1 != last1; ++first1) {  // 遍历序列一
-            for (auto iter = first2; iter != last2; ++iter) {  // 遍历序列好
+            for (auto iter = first2; iter != last2; ++iter) {  // 遍历序列二
                 if (*first1 == *iter) {
-                    return *first1;
+                    return first1;
                 }
             }
         }
@@ -385,7 +385,7 @@ namespace mystl {
         for (; first1 != last1; ++first1) {
             for (auto iter = first2; iter != last2; ++iter) {
                 if (comp(*first1, *iter)) {
-                    return *first1;
+                    return first1;
                 }
             }
         }
@@ -441,7 +441,7 @@ namespace mystl {
     // forward_iterator_tag
     template <typename ForwardIter, typename T>
     ForwardIter lbound_dispatch(ForwardIter first, ForwardIter last,
-                                const T& value, forward_iterator_tag) {
+                                const T &value, forward_iterator_tag) {
         auto len = mystl::distance(first, last);
         auto half = len;
         ForwardIter middle;
@@ -464,7 +464,7 @@ namespace mystl {
     // random_access_iterator_tag
     template <typename RandomIter, typename T>
     RandomIter lbound_dispatch(RandomIter first, RandomIter last,
-                               const T& value, random_access_iterator_tag) {
+                               const T &value, random_access_iterator_tag) {
         auto len = last - first;
         auto half = len;
         RandomIter middle;
@@ -484,14 +484,14 @@ namespace mystl {
 
     template <typename ForwardIter, typename T>
     ForwardIter
-    lower_bound(ForwardIter first, ForwardIter last, const T& value) {
+    lower_bound(ForwardIter first, ForwardIter last, const T &value) {
         return mystl::lbound_dispatch(first, last, value, iterator_category(first));
     }
 
     // forward_iterator_tag
     template <typename ForwardIter, typename T, typename Compared>
     ForwardIter lbound_dispatch(ForwardIter first, ForwardIter last,
-                                const T& value, forward_iterator_tag,
+                                const T &value, forward_iterator_tag,
                                 Compared comp) {
         auto len = mystl::distance(first, last);
         auto half = len;
@@ -515,7 +515,7 @@ namespace mystl {
     // random_access_iterator_tag
     template <typename RandomIter, typename T, typename Compared>
     RandomIter lbound_dispatch(RandomIter first, RandomIter last,
-                               const T& value, random_access_iterator_tag,
+                               const T &value, random_access_iterator_tag,
                                Compared comp) {
         auto len = last - first;
         auto half = len;
@@ -536,7 +536,7 @@ namespace mystl {
 
     template <typename ForwardIter, typename T, typename Compared>
     ForwardIter
-    lower_bound(ForwardIter first, ForwardIter last, const T& value, Compared comp) {
+    lower_bound(ForwardIter first, ForwardIter last, const T &value, Compared comp) {
         return mystl::lbound_dispatch(first, last, value, iterator_category(first), comp);
     }
 
