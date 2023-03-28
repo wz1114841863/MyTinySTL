@@ -1,6 +1,6 @@
 #include <iostream>
 #include <valarray>
-// #include "test_utils.h"
+#include "test_utils.h"
 #include "test_allocator.h"
 #include "test_functional.h"
 #include "test_iterator.h"
@@ -35,16 +35,16 @@ void test_vector() {
     test_vector_02();
 }
 
-// void test_utils() {
-//     test_util_01();
-//     test_util_02();
-//     test_util_03();
-//     test_util_04();
-//     test_util_05();
-//     test_util_06();
-//     test_util_07();
-//     test_util_08();
-// }
+void test_utils() {
+    test_util_01();
+    test_util_02();
+    test_util_03();
+    test_util_04();
+    test_util_05();
+    test_util_06();
+    test_util_07();
+    test_util_08();
+}
 
 void test_algorithm() {
     // test_algorithm_01();
@@ -55,11 +55,11 @@ void test_algorithm() {
     test_algorithm_06();
 }
 
-// void test_list() {
-//     test_list_01();
-// }
+void test_list() {
+    test_list_01();
+}
 
 int main() {
-    test_algorithm();
+    test_list();
     return 0;
 }

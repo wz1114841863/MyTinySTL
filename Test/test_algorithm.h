@@ -365,4 +365,63 @@ void test_algorithm_06() {
 
     auto iter2 = mystl::lower_bound(vec2.begin(), vec2.end(), 5);
     std::cout << "iter2.val: " << *iter2 << std::endl;
+
+    mystl::vector<int> vec3{1, 3, 5, 7, 9, 11};
+    auto iter3 = mystl::upper_bound(vec3.begin(), vec3.end(), 10);
+    std::cout << "iter3.val: is 11? " << *iter3 << std::endl;
+
+    auto iter4 = mystl::upper_bound(vec3.begin(), vec3.end(), 10, mystl::less<int>());
+    std::cout << "iter4.val: is 11? " << *iter4 << std::endl;
+
+    auto iter5 = mystl::binary_search(vec3.begin(), vec3.end(), 5);
+    std::cout << "iter5.val: is true? " << iter5 << std::endl;
+
+    auto iter6 = mystl::equal_range(vec2.begin(), vec2.end(),6);
+    std::cout << "iter6.first: " << iter6.first << "iter6.second: " << iter6.second << std::endl;
+
+    auto gen = []() {
+        return 1;
+    };
+    mystl::generate(vec2.begin(), vec2.end(), gen);
+    std::cout << "all of vec2 is 1? " << "";
+    mystl::for_each(vec2.begin(), vec2.end(), printVal);
+    std::cout << std::endl;
+
+    auto gen1 = []() {
+        return 4;
+    };
+    mystl::generate_n(vec2.begin(), 3, gen1);
+    std::cout << "0 - 3 elem is 4? " << "";
+    mystl::for_each(vec2.begin(), vec2.end(), printVal);
+    std::cout << std::endl;
+
+    mystl::vector<int> vec4{5, 7, 9};
+    std::cout << "includes ture?: " << mystl::includes(vec3.begin(), vec3.end(), vec4.begin(), vec4.end()) << std::endl;
+
+    std::cout << "vec1 is_heap: " << mystl::is_heap(vec1.begin(), vec1.end()) << std::endl;
+
+    std::cout << "vec2 is_sorted: " << mystl::is_sorted(vec2.begin(), vec2.end()) << std::endl;
+
+    std::cout << "median 20?: " << mystl::median(10, 20, 30) << std::endl;
+
+    mystl::vector<int> vec5{5, 7, 9, 6, 8, 10, 1, 2, 4};
+    auto iter7 = mystl::max_element(vec5.begin(), vec5.end());
+    std::cout << "iter7.val: is 10? " << *iter7 << std::endl;
+
+    auto iter8 = mystl::max_element(vec5.begin(), vec5.end(), mystl::less<int>());
+    std::cout << "iter8.val: is 10? " << *iter8 << std::endl;
+
+    auto iter9 = mystl::min_element(vec5.begin(), vec5.end());
+    std::cout << "iter9.val: is 1? " << *iter9 << std::endl;
+
+    auto iter10 = mystl::min_element(vec5.begin(), vec5.end(), mystl::less<int>());
+    std::cout << "iter10.val: is 1? " << *iter10 << std::endl;
+
+    mystl::swap_ranges(vec4.begin(), vec4.end(), vec5.begin() + 3);
+    std::cout << "swap vec4, vec5" << std::endl;
+    mystl::for_each(vec4.begin(), vec4.end(), printVal);
+    std::cout << std::endl;
+    mystl::for_each(vec5.begin(), vec5.end(), printVal);
+    std::cout << std::endl;
+
 }

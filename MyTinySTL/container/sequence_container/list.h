@@ -26,8 +26,8 @@ namespace mystl {
 
     template <typename T>
     struct node_traits {
-        typedef list_node_base<T> *base_ptr;
-        typedef list_node<T> *node_ptr;
+        typedef list_node_base<T>* base_ptr;
+        typedef list_node<T>* node_ptr;
     };
 
     // list的节点结构
@@ -50,10 +50,11 @@ namespace mystl {
             return static_cast<node_ptr>(self());
         }
 
-        virtual base_ptr self() {
+        base_ptr self() {  // TODO: 为什么不能加virtual
             return static_cast<base_ptr>(&*this);
         }
     };
+
 
     // list 数据节点
     template <typename T>
@@ -87,7 +88,7 @@ namespace mystl {
         typedef typename node_traits<T>::node_ptr node_ptr;
         typedef list_iterator<T>                  self;
 
-        base_ptr  node_;  // 指向当前节点
+        base_ptr  node_;  // 指针类型，指向一个节点
 
         // 构造函数
         list_iterator() = default;
@@ -97,7 +98,7 @@ namespace mystl {
 
         // 重载操作符
         reference operator*()   const { return node_->as_node()->value; }
-        pointer   operator->()  const { return &(operator*()); }
+        pointer   operator->()  const { return &(operator*()); }  // 如何调用？ *(iter.operator->())
 
         self &operator++() {
             MYSTL_DEBUG(node_ != nullptr);
@@ -305,7 +306,7 @@ namespace mystl {
 
         // 调整容器相关操作
         // assign
-        void assign (size_type n ,const value_type *value) {
+        void assign (size_type n, const value_type &value) {
             fill_assign(n, value);
         }
 
@@ -339,7 +340,7 @@ namespace mystl {
         }
 
         template <typename ...Args>
-        void emplace(const_iterator pos, Args&& ...args) {
+        iterator emplace(const_iterator pos, Args&& ...args) {
             THROW_LENGTH_ERROR_IF(size_ > max_size() - 1,
                                   "list<T>'s size too big");
             auto link_node = create_node(mystl::forward<Args>(args)...);
@@ -505,7 +506,7 @@ namespace mystl {
 
         template <typename Iter>
 
-        void copy_assign(Iter first, Iter last);
+        void copy_assign(Iter f2, Iter l2);
 
         // insert
         iterator fill_insert(const_iterator pos, size_type n, const value_type &value);
@@ -589,7 +590,7 @@ namespace mystl {
     // 将 list x 接合于 pos 之前
     template <typename T>
     void list<T>::splice(const_iterator pos, list &other) {
-        MYSTL_DEBUG(this != other);
+        MYSTL_DEBUG(this != &other);
         if (!other.empty()) {
             THROW_LENGTH_ERROR_IF(size_ > max_size() - other.size_,
                                   "list<T>'s size too big");
@@ -606,7 +607,7 @@ namespace mystl {
 
     // 将it所指的节点合于pos之前
     template <typename T>
-    void list<T>::splice(const_iterator pos, list<T> &other, const_iterator it) {
+    void list<T>::splice(const_iterator pos, list &other, const_iterator it) {
         if (pos.node_ != it.node_ && pos.node_ != it.node_->next) {
             THROW_LENGTH_ERROR_IF(size_ > max_size() - 1,
                                   "list<T>'s size too big");
@@ -917,6 +918,7 @@ namespace mystl {
            }
             link_nodes(pos.node_, r.node_, end.node_);
         }
+        return r;
     }
 
     // 在 pos 处插入 [first, last) 的元素
@@ -927,7 +929,7 @@ namespace mystl {
         iterator r(pos.node_);
         if (n != 0) {
             const auto add_size = n;
-            auto node = creat_node(*first);
+            auto node = create_node(*first);
             node->prev = nullptr;
             r = iterator(node);
             iterator end = r;
@@ -1033,33 +1035,33 @@ namespace mystl {
     }
 
     template <typename T>
-    bool operator<(const list<T>& lhs, const list<T>& rhs) {
+    bool operator<(const list<T> &lhs, const list<T> &rhs) {
         return mystl::lexicographical_compare(lhs.cbegin(), lhs.cend(), rhs.cbegin(), rhs.cend());
     }
 
     template <typename T>
-    bool operator!=(const list<T>& lhs, const list<T>& rhs) {
+    bool operator!=(const list<T> &lhs, const list<T> &rhs) {
         return !(lhs == rhs);
     }
 
     template <typename T>
-    bool operator>(const list<T>& lhs, const list<T>& rhs) {
+    bool operator>(const list<T> &lhs, const list<T> &rhs) {
         return rhs < lhs;
     }
 
     template <typename T>
-    bool operator<=(const list<T>& lhs, const list<T>& rhs) {
+    bool operator<=(const list<T> &lhs, const list<T> &rhs) {
         return !(rhs < lhs);
     }
 
     template <typename T>
-    bool operator>=(const list<T>& lhs, const list<T>& rhs) {
+    bool operator>=(const list<T> &lhs, const list<T> &rhs) {
         return !(lhs < rhs);
     }
 
     // 重载 mystl 的 swap
     template <typename T>
-    void swap(list<T>& lhs, list<T>& rhs) noexcept {
+    void swap(list<T> &lhs, list<T> &rhs) noexcept {
         lhs.swap(rhs);
     }
 

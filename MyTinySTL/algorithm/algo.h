@@ -549,7 +549,7 @@ namespace mystl {
     // forward_iterator_tag
     template <typename ForwardIter, typename T>
     ForwardIter ubound_dispatch(ForwardIter first, ForwardIter last,
-                                const T& value, forward_iterator_tag) {
+                                const T &value, forward_iterator_tag) {
         auto len = mystl::distance(first, last);
         auto half = len;
         ForwardIter middle;
@@ -573,7 +573,7 @@ namespace mystl {
     // random_access_iterator_tag
     template <typename RandomIter, typename T>
     RandomIter ubound_dispatch(RandomIter first, RandomIter last,
-                               const T& value, random_access_iterator_tag) {
+                               const T &value, random_access_iterator_tag) {
         auto len = last - first;
         auto half = len;
         RandomIter middle;
@@ -600,7 +600,7 @@ namespace mystl {
     // forward_iterator_tag
     template <typename ForwardIter, typename T, typename Compared>
     ForwardIter ubound_dispatch(ForwardIter first, ForwardIter last,
-                                const T& value, forward_iterator_tag,
+                                const T &value, forward_iterator_tag,
                                 Compared comp) {
         auto len = mystl::distance(first, last);
         auto half = len;
@@ -625,7 +625,7 @@ namespace mystl {
     // random_access_iterator_tag
     template <typename RandomIter, typename T, typename Compared>
     RandomIter ubound_dispatch(RandomIter first, RandomIter last,
-                               const T& value, random_access_iterator_tag,
+                               const T &value, random_access_iterator_tag,
                                Compared comp) {
         auto len = last - first;
         auto half = len;
@@ -646,7 +646,7 @@ namespace mystl {
 
     template <typename ForwardIter, typename T, typename Compared>
     ForwardIter
-    upper_bound(ForwardIter first, ForwardIter last, const T& value, Compared comp) {
+    upper_bound(ForwardIter first, ForwardIter last, const T &value, Compared comp) {
         return mystl::ubound_dispatch(first, last, value, iterator_category(first), comp);
     }
 
@@ -939,7 +939,7 @@ namespace mystl {
     }
 
     template <typename T, typename Compared>
-    const T& median(const T& left, const T& mid, const T& right, Compared comp) {
+    const T &median(const T &left, const T &mid, const T &right, Compared comp) {
         if (comp(left, mid))
             if (comp(mid, right))
                 return mid;
@@ -990,7 +990,7 @@ namespace mystl {
     // 返回一个迭代器，指向序列中最小的元素
     /*****************************************************************************************/
     template <typename ForwardIter>
-    ForwardIter min_elememt(ForwardIter first, ForwardIter last) {
+    ForwardIter min_element(ForwardIter first, ForwardIter last) {
         if (first == last) {
             return first;
         }
@@ -1004,7 +1004,7 @@ namespace mystl {
     }
 
     template <typename ForwardIter, typename Compared>
-    ForwardIter min_elememt(ForwardIter first, ForwardIter last, Compared comp) {
+    ForwardIter min_element(ForwardIter first, ForwardIter last, Compared comp) {
         if (first == last) {
             return first;
         }

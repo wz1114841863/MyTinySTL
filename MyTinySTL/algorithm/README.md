@@ -142,4 +142,58 @@ algo.h
     
     lower_bound
     在[first, last)中查找第一个不小于 value 的元素，并返回指向它的迭代器，若没有则返回 last
+    
+    upper_bound
+    在[first, last)中查找第一个大于value 的元素，并返回指向它的迭代器，若没有则返回 last
+    
+    binary_search
+    二分查找，如果在[first, last)内有等同于 value 的元素，返回 true，否则返回 false
+    
+    equal_range
+    查找[first,last)区间中与 value 相等的元素所形成的区间，返回一对迭代器指向区间首尾
+    
+    generate
+    将函数对象 gen 的运算结果对[first, last)内的每个元素赋值
+    
+    generate_n
+    用函数对象 gen 连续对 n 个元素赋值
+    
+    includes
+    判断序列一S1 是否包含序列二S2
+    
+    is_heap
+    检查[first, last)内的元素是否为一个堆，如果是，则返回 true
+    
+    is_sorted
+    检查[first, last)内的元素是否升序，如果是升序，则返回 true
+    
+    median
+    找出三个值的中间值
+    
+    max_element
+    返回一个迭代器，指向序列中最大的元素
+    
+    min_element
+    返回一个迭代器，指向序列中最小的元素
+    
+    swap_ranges
+    将[first1, last1)从 first2 开始，交换相同个数元素
+    
+    transform
+    第一个版本以函数对象 unary_op 作用于[first, last)中的每个元素并将结果保存至 result 中
+    第二个版本以函数对象 binary_op 作用于两个序列[first1, last1)、[first2, last2)的相同位置
+    
+    remove_copy
+    移除区间内与指定 value 相等的元素，并将结果复制到以 result 标示起始位置的容器上
+    
+    remove
+    移除所有与指定 value 相等的元素
+    
+    remove_copy_if
+    移除区间内所有令一元操作 unary_pred 为 true 的元素，并将结果复制到以 result 为起始位置的容器上
+    
+    remove_if
+    移除区间内所有令一元操作 unary_pred 为 true 的元素
+    
+    
 ```

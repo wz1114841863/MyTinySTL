@@ -45,6 +45,7 @@ Test/
     test_iterator.h
     test_vector.h
     test_util.h
-    test_algorithm.h 差algo.h文件未完整测试
+    test_algorithm.h
+    test_list.h
     尚待补充
 ```

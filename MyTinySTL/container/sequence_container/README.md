@@ -1,5 +1,5 @@
 包含常见的顺序容器  
-    vector、 list、deque  
+    vector、list、deque  
 ```
 vector:
     // 空间配置器：
@@ -112,5 +112,5 @@ list.h
     list &operator=(list &&rhs);
     list &operator=(std::initializer_list<T> ilist);
     
-    
+    其余操作类似于vector, 但函数实现方式不同， 具体实现见源码
 ```
