@@ -10,6 +10,7 @@
 #include "test_deque.h"
 #include "test_stack.h"
 #include "test_queue.h"
+#include "test_reverse_iterator.h"
 
 void test_alloc() {
     std::cout << "测试mystl::alloc" << std::endl;
@@ -78,8 +79,11 @@ void test_queue() {
     test_pri_queue_02();
 }
 
+void test_reverse_iterator() {
+    test_reverse_iterator_01();
+}
 int main() {
     std::cout << "main: " << std::endl;
-
+    test_reverse_iterator();
     return 0;
 }

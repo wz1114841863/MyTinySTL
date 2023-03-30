@@ -70,3 +70,34 @@ priority_queue.h
     
     比较操作符仅重载了 ==， !=
 ```
+reverse_iterator:  
+迭代器适配器，这里仅实现了reverse_iterator，还有insert_iterator等多种迭代器适配器  
+重点：理解反向迭代器与正向迭代器的位置关系， *反向迭代器物理位置和逻辑位置差一位*，即反向迭代器的指向总是距离基础迭代器偏左 1 个位置；反之，基础迭代器的指向总是距离反向迭代器偏右 1 个位置处
+```  
+    // 构造函数仅有三种
+    reverse_iterator() = default;
+    explicit reverse_iterator(iterator_type i) :current(i) {}
+    reverse_iterator(const self &rhs) :current(rhs.current) {}
+    
+    // 私有成员：
+    Iterator current;  // 记录对应的正向迭代器
+    
+    base()  // 取出对应正向迭代器
+        
+    // 关键在于对操作符进行了重载
+    operator*()  // 理解它的实现 
+    operator->()  
+    operator++()
+    operator++(int)
+    &operator--()
+    operator--(int)
+    operator+=(difference_type n)
+    operator-=(difference_type n)
+    operator-(difference_type n)
+    operator[](difference_type n)
+    
+    // 全局运算符
+    operator- (const reverse_iterator<Iterator> &lhs,
+               const reverse_iterator<Iterator> &rhs)
+               
+```
