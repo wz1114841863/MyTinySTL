@@ -114,3 +114,87 @@ list.h
     
     其余操作类似于vector, 但函数实现方式不同， 具体实现见源码
 ```
+deque.h
+``` 
+    deque_buf_size:
+    获取buf_size, sizeof(T)较大时默认为16，较小时为 4096 / sizeof(T)
+    buf_size 用来表示每个缓存区的默认大小
+    
+    deque_iterator: random_access_iterator
+    deque的迭代器比较复杂，由于duque实现的特殊性，每个迭代器包含四个指针:
+        value_pointer   cur;    // 指向所在缓冲区的当前元素
+        value_pointer   first;  // 指向所在缓冲区的头部
+        value_pointer   last;   // 指向所在缓冲区的尾部
+        map_pointer     node;   // 指向缓冲区所在节点，即中控区中某节点
+    
+    // 构造函数
+    deque_iterator()
+    deque_iterator(value_pointer v, map_pointer n)
+    deque_iterator(const const_iterator &rhs)
+    deque_iterator(iterator &&rhs)
+    
+    // 操作符重载
+    self &operator=(const iterator &rhs)
+    
+    // 辅助函数
+    void set_node(map_pointer new_node)
+    参数为new_node, 修改了node、first、last属性，但是未修改cur
+    
+    // 操作符重载
+    由于是random迭代器，需要实现所有对应的操作符
+    
+        reference operator*()   const { return *cur; }
+        返回cur所指的值
+        
+        pointer   operator->()  const { return cur; }
+        返回cur指针本身
+        
+        difference_type operator-
+        迭代器距离需要考虑node之间的距离以及cur离firs的距离两部分
+        
+        self &operator++()
+        self operator++(int)
+        self &operator--()
+        self &operator--(int)
+        需要考虑到达了缓冲区边界的情况，如果到了缓冲区边界就要修改node指向
+        
+        self &operator+=(difference_type n)
+        两种情况：
+            仍在当前缓冲区，仅移动cur即可
+            向前或向后缓冲区移动，需先调整node，再调整cur
+            
+        self operator+(difference_type n)
+        self &operator-=(difference_type n)
+        self operator-(difference_type n)
+        
+        reference operator[](difference_type n)
+        重载[]操作符， 分别调用operator+, operator*，返回cur
+        
+        // 重载比较操作符
+        
+    
+    deque:
+    四个关键元素：
+        iterator       begin_;     // 指向第一个节点
+        iterator       end_;       // 指向最后一个结点
+        map_pointer    map_;       // 指向一块 map，map 中的每个元素都是一个指针，指向一个缓冲区
+        size_type      map_size_;  // map 内指针的数目
+        
+    // 构造函数
+    deque()
+    deque(size_type n)
+    deque(size_type n, const value_type &value)
+    deque(IIter first, IIter last)
+    deque(std::initializer_list<value_type> ilist)
+    deque(const deque &rhs)
+    deque(deque &&rhs)
+    
+    // 赋值运算符重载
+    deque& operator=(const deque &rhs);
+    deque& operator=(deque &&rhs);  
+    deque& operator=(std::initializer_list<value_type> ilist)
+    
+    ~deque()
+    
+    其余操作类似于vector, 但函数实现方式不同, 具体实现见源码
+```

@@ -47,5 +47,6 @@ Test/
     test_util.h
     test_algorithm.h
     test_list.h
+    test_deque.h
     尚待补充
 ```

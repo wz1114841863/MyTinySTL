@@ -12,28 +12,28 @@
 //   * push_front
 //   * push_back
 //   * insert
-
 #include <initializer_list>
+#include <iostream>
 #include "iterator.h"
 #include "memory.h"
 #include "util.h"
 #include "exceptdef.h"
 
 namespace mystl {
-#ifdef max
-    #pragma message("#undefing marco max")
-#undef max
-#endif // max
+    #ifdef max
+        #pragma message("#undefing marco max")
+        #undef max
+    #endif // max
 
-#ifdef min
-    #pragma message("#undefing marco min")
-#undef min
-#endif // min
+    #ifdef min
+        #pragma message("#undefing marco min")
+        #undef min
+    #endif // min
 
-// deque map 初始化的大小
-#ifndef DEQUE_MAP_INIT_SIZE
-#define DEQUE_MAP_INIT_SIZE 8
-#endif
+    // deque map 初始化的大小
+    #ifndef DEQUE_MAP_INIT_SIZE
+    #define DEQUE_MAP_INIT_SIZE 8
+    #endif
 }
 
 namespace mystl {
@@ -44,7 +44,7 @@ namespace mystl {
 
     // deque 迭代器, 并不是普通的指针
     template <typename T, typename Ref, typename Ptr>
-    struct deque_iterator : public iterator<random_access_iterator_tag, T> {
+    struct deque_iterator :public iterator<random_access_iterator_tag, T> {
         typedef deque_iterator<T, T&, T*>               iterator;
         typedef deque_iterator<T, const T&, const T*>   const_iterator;
         typedef deque_iterator                          self;
@@ -55,25 +55,28 @@ namespace mystl {
         typedef size_t       size_type;
         typedef ptrdiff_t    difference_type;
         typedef T*           value_pointer;
-        typedef T**          map_pointer;
+        typedef T**          map_pointer;  // 注意这里是指针的指针
 
         static const size_type buffer_size = deque_buf_size<T>::value;
 
         // 迭代器所含成员数据
-        value_pointer cur;  // 指向所在缓冲区的当前元素
-        value_pointer first;  // 指向所在缓冲区的头部
-        value_pointer last;  // 指向所在缓冲区的尾部
-        map_pointer node;  // 指向缓冲区所在节点，即中控区中某节点
+        value_pointer   cur;    // 指向所在缓冲区的当前元素
+        value_pointer   first;  // 指向所在缓冲区的头部
+        value_pointer   last;   // 指向所在缓冲区的尾部
+        map_pointer     node;   // 指向缓冲区所在节点，即中控区中某节点
 
         // 构造、复制、移动函数
         deque_iterator() noexcept
-            :cur(nullptr), first(nullptr), last(nullptr), node(nullptr) {}
+        :cur(nullptr), first(nullptr), last(nullptr), node(nullptr) {}
 
         deque_iterator(value_pointer v, map_pointer n)
-            :cur(v), first(*n), last(*n + buffer_size), node(n) {}
+        :cur(v), first(*n), last(*n + buffer_size), node(n) {}
+
+        deque_iterator(const iterator &rhs)
+        :cur(rhs.cur), first(rhs.first), last(rhs.last), node(rhs.node) {}
 
         deque_iterator(iterator &&rhs) noexcept
-                :cur(rhs.cur), first(rhs.first), last(rhs.last), node(rhs.node) {
+        :cur(rhs.cur), first(rhs.first), last(rhs.last), node(rhs.node) {
             rhs.cur = nullptr;
             rhs.first = nullptr;
             rhs.last = nullptr;
@@ -81,7 +84,7 @@ namespace mystl {
         }
 
         deque_iterator(const const_iterator& rhs)
-            :cur(rhs.cur), first(rhs.first), last(rhs.last), node(rhs.node) {}
+        :cur(rhs.cur), first(rhs.first), last(rhs.last), node(rhs.node) {}
 
         self &operator=(const iterator &rhs) {
             if (this != &rhs) {
@@ -101,13 +104,13 @@ namespace mystl {
         }
 
         // 重载运算符
-        reference operator*()  const { return *cur; }
-        pointer operator->() const { return cur; }
+        reference operator* ()  const { return *cur; }
+        pointer   operator->()  const { return cur; }
 
         // 计算迭代器之间的距离
         difference_type operator-(const self &x) const {
             return static_cast<difference_type >(buffer_size) * (node - x.node)
-                + (cur - first) - (x.xur - x.first);
+                + (cur - first) - (x.cur - x.first);
         }
 
         // 考虑缓冲区边界情况
@@ -117,6 +120,7 @@ namespace mystl {
                 set_node(node + 1);
                 cur = first;
             }
+            return *this;
         }
 
         self operator++(int) {
@@ -142,9 +146,9 @@ namespace mystl {
 
         self &operator+=(difference_type n) {
             const auto offset = n + (cur - first);
-            if (offset > 0 && offset < static_cast<difference_type>(buffer_size)) {
+            if (offset >= 0 && offset < static_cast<difference_type>(buffer_size)) {
                 // 仍在当前缓冲区
-                cur = n;
+                cur += n;
             }else {
                 // 跳到其余缓冲区
                 const auto node_offset = offset > 0
@@ -207,8 +211,7 @@ namespace mystl {
         typedef mystl::reverse_iterator<iterator>        reverse_iterator;
         typedef mystl::reverse_iterator<const_iterator>  const_reverse_iterator;
 
-        allocator_type get_allocator() { return allocator_typr(); }
-
+        allocator_type get_allocator() { return allocator_type(); }
         static const size_type buffer_size = deque_buf_size<T>::value;
 
     private:
@@ -239,10 +242,8 @@ namespace mystl {
         }
 
         deque(deque &&rhs) noexcept
-                :begin_(mystl::move(rhs.begin_)),
-                 end_(mystl::move(rhs.end_)),
-                 map_(rhs.map_),
-                 map_size_(rhs.map_size_) {
+        :begin_(mystl::move(rhs.begin_)), end_(mystl::move(rhs.end_)),
+         map_(rhs.map_), map_size_(rhs.map_size_) {
             rhs.map_ = nullptr;
             rhs.map_size_ = 0;
         }
@@ -268,35 +269,27 @@ namespace mystl {
 
     public:
         // 迭代器相关操作
-        iterator begin() noexcept { return begin_; }
+        iterator        begin()         noexcept { return begin_; }
+        const_iterator  begin() const   noexcept { return begin_; }
+        iterator        end()           noexcept { return end_; }
+        const_iterator  end()   const   noexcept { return end_; }
 
-        const_iterator begin() const noexcept { return begin_; }
+        reverse_iterator        rbegin()        noexcept { return reverse_iterator(end()); }
+        const_reverse_iterator  rbegin() const  noexcept { return reverse_iterator(end()); }
+        reverse_iterator        rend()          noexcept { return reverse_iterator(begin()); }
+        const_reverse_iterator  rend()   const  noexcept { return reverse_iterator(begin()); }
 
-        iterator end() noexcept { return end_; }
-
-        const_iterator end() const noexcept { return end_; }
-
-        reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
-
-        const_reverse_iterator rbegin() const noexcept { return reverse_iterator(end()); }
-
-        reverse_iterator rend() noexcept { return reverse_iterator(begin()); }
-
-        const_reverse_iterator rend() const noexcept { return reverse_iterator(begin()); }
-
-        const_iterator cbegin() const noexcept { return begin(); }
-
-        const_iterator cend() const noexcept { return end(); }
-
-        const_reverse_iterator crbegin() const noexcept { return rbegin(); }
-
-        const_reverse_iterator crend() const noexcept { return rend(); }
+        const_iterator          cbegin()    const noexcept { return begin(); }
+        const_iterator          cend()      const noexcept { return end(); }
+        const_reverse_iterator  crbegin()   const noexcept { return rbegin(); }
+        const_reverse_iterator  crend()     const noexcept { return rend(); }
 
         // 容量相关操作
         bool empty() const noexcept {
             return begin() == end();
         }
 
+        // 依赖迭代器操作符重载
         size_type size() const noexcept {
             return end_ - begin_;
         }
@@ -314,7 +307,7 @@ namespace mystl {
         void shrink_to_fit() noexcept;
 
         // 访问元素相关操作
-        reference operator[size_type n] {
+        reference operator[](size_type n) {
             MYSTL_DEBUG(n < size());
             return begin_[n];
         };
@@ -383,11 +376,9 @@ namespace mystl {
 
         // push_front / push_back
         void push_front(const value_type &value);
-
         void push_back(const value_type &value);
 
         void push_front(value_type &&value) { emplace_front(mystl::move(value)); }
-
         void push_back(value_type &&value)  { emplace_back(mystl::move(value)); }
 
         // pop_back / pop_front
@@ -396,10 +387,9 @@ namespace mystl {
 
         // insert
         iterator insert(iterator position, const value_type &value);
-
         iterator insert(iterator position, value_type &&value);
 
-        void insert(iterator position, size_type n, const value_type& value);
+        void insert(iterator position, size_type n, const value_type &value);
 
         template <class IIter, typename std::enable_if<
                 mystl::is_input_iterator<IIter>::value, int>::type = 0>
@@ -409,7 +399,6 @@ namespace mystl {
 
         // erase /clear
         iterator erase(iterator position);
-
         iterator erase(iterator first, iterator last);
 
         void clear();
@@ -450,7 +439,7 @@ namespace mystl {
         template <typename... Args>
         iterator insert_aux(iterator position, Args&& ...args);
 
-        void fill_insert(iterator position, size_type n, const value_type &x);
+        void fill_insert(iterator position, size_type n, const value_type &value);
 
         template <typename FIter>
         void copy_insert(iterator, FIter, FIter, size_type);
@@ -466,7 +455,7 @@ namespace mystl {
 
         void reallocate_map_at_front(size_type need);
 
-        void  reallocate_map_at_back(size_type need);
+        void reallocate_map_at_back(size_type need);
     };
 
     /************************
@@ -480,7 +469,7 @@ namespace mystl {
            if (len >= rhs.size()) {
                erase(mystl::copy(rhs.begin_, rhs.end_, begin_), end_);
            }else {
-               iterator mid = rhs.begin() + static_cast<difference_type>(len);
+               iterator mid = rhs.begin_ + static_cast<difference_type>(len);
                mystl::copy(rhs.begin_, mid, begin_);
                insert(end_, mid, rhs.end_);
            }
@@ -536,13 +525,13 @@ namespace mystl {
     template <typename ...Args>
     void deque<T>::emplace_front(Args&& ...args) {
         if (begin_.cur != begin_.first) {
-            data_allocator::construct(begin.cur - 1, mystl::forward<Args>(args)...);  // 构造函数
+            data_allocator::construct(begin_.cur - 1, mystl::forward<Args>(args)...);  // 构造函数
             --begin_.cur;  // 只移动cur，其余的不用移动
         }else {
             require_capacity(1, true);
             try {
                 --begin_;  // 调用操作符重载
-                data_allocator::construct(begin_.cur, mystl::forward<Args>(args)...)
+                data_allocator::construct(begin_.cur, mystl::forward<Args>(args)...);
             }catch (...) {
                 ++begin_;
                 throw;
@@ -646,7 +635,7 @@ namespace mystl {
     template <typename T>
     typename deque<T>::iterator
     deque<T>::insert(iterator position, const value_type &value) {
-        if (position.cur == begin.cur) {
+        if (position.cur == begin_.cur) {
             push_front(value);
             return begin_;
         }else if (position.cur == end_.cur){
@@ -662,7 +651,7 @@ namespace mystl {
     template <typename T>
     typename deque<T>::iterator
     deque<T>::insert(iterator position, value_type &&value) {
-        if (position.cur == begin.cur) {
+        if (position.cur == begin_.cur) {
             emplace_front(value);
             return begin_;
         }else if (position.cur == end_.cur){
@@ -747,7 +736,7 @@ namespace mystl {
             data_allocator::destroy(*cur, *cur + buffer_size);
         }
 
-        if ((begin_.node != end_.node) {  // 有两个以上的缓冲区
+        if (begin_.node != end_.node) {  // 有两个以上的缓冲区
             // 销毁不满的缓存区
             mystl::destroy(begin_.cur, begin_.last);
             mystl::destroy(end_.first, end_.cur);
@@ -779,7 +768,7 @@ namespace mystl {
      // create_map
     template <typename T>
     typename deque<T>::map_pointer
-    deque<T>::create_map(sizw_type size) {
+    deque<T>::create_map(size_type size) {
         map_pointer mp = nullptr;
         mp = map_allocator::allocate(size);
         for (size_type i = 0; i < size; ++i) {
@@ -1105,19 +1094,19 @@ namespace mystl {
     void deque<T>::insert_dispatch(iterator position, FIter first, FIter last, forward_iterator_tag) {
         if (last <= first) { return; }
         const size_type n = mystl::distance(first, last);
-        if (position.cur == begin.cur) {  // 头部插入
+        if (position.cur == begin_.cur) {  // 头部插入
             require_capacity(n, true);
             auto new_begin = begin_ - n;
             try {
                 mystl::uninitialized_copy(first, last, new_begin);
                 begin_ = new_begin;
             }catch (...) {
-                if (new_bgein.node != begin.node) {
+                if (new_begin.node != begin_.node) {
                     destroy_buffer(new_begin.node, begin_.node - 1);
                 }
                 throw;
             }
-        }else if (position.cur == end.cur) {
+        }else if (position.cur == end_.cur) {
             require_capacity(n, false);
             auto new_end = end_ + n;
             try {
@@ -1137,7 +1126,7 @@ namespace mystl {
     // require_capacity
     template <typename T>
     void deque<T>::require_capacity(size_type n, bool front) {
-        if (front && (static_assert<size_type>(begin_.cur - begin_.first) < n)) {
+        if (front && (static_cast<size_type>(begin_.cur - begin_.first) < n)) {
             // 头部：计算需要几个缓冲区
             const size_type need_buffer = (n - (begin_.cur - begin_.first)) / buffer_size + 1;
             if (need_buffer > static_cast<size_type>(begin_.node - map_)) {  // 缓冲区不够了
@@ -1145,14 +1134,14 @@ namespace mystl {
                 return;
             }
             create_buffer(begin_.node - need_buffer, begin_.node - 1);
-        }else if (!front && (static_cast<size_type>(end_.last - end_.cur - 1) < n) {
+        }else if (!front && (static_cast<size_type>(end_.last - end_.cur - 1) < n)) {
             // 尾部：计算需要几个缓冲区
             const size_type need_buffer = (n - (end_.last - end_.cur - 1)) / buffer_size + 1;
             if (need_buffer > static_cast<size_type>((map_ + map_size_) - end_.node - 1)) {
                 reallocate_map_at_back(need_buffer);
                 return;
             }
-            create_buffer(end_.node + 1, end_.node + nead_buffer);
+            create_buffer(end_.node + 1, end_.node + need_buffer);
         }
     }
 
@@ -1218,7 +1207,7 @@ namespace mystl {
     }
 
     template <typename T>
-    bool operator<(const deque<T> &lhs, const deque<T> &rhs) {
+    bool operator< (const deque<T> &lhs, const deque<T> &rhs) {
         return mystl::lexicographical_compare(
                 lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
     }
@@ -1229,7 +1218,7 @@ namespace mystl {
     }
 
     template <typename T>
-    bool operator>(const deque<T> &lhs, const deque<T> &rhs) {
+    bool operator> (const deque<T> &lhs, const deque<T> &rhs) {
         return rhs < lhs;
     }
 

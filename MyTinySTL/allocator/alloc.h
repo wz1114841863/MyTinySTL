@@ -175,7 +175,7 @@ namespace mystl {
         size_t pool_bytes = end_free - start_free;  // 计算内存池剩余空间
 
         // 如果内存池空间满足需求，返回
-        if (pool_bytes >= size) {
+        if (pool_bytes >= need_bytes) {
             result = start_free;
             start_free += need_bytes;  // 调整内存池大小
             return result;

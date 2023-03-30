@@ -7,6 +7,7 @@
 #include "test_vector.h"
 #include "test_algorithm.h"
 #include "test_list.h"
+#include "test_deque.h"
 
 void test_alloc() {
     std::cout << "测试mystl::alloc" << std::endl;
@@ -47,11 +48,11 @@ void test_utils() {
 }
 
 void test_algorithm() {
-    // test_algorithm_01();
-    // test_algorithm_02();
-    // test_algorithm_03();
-    // test_algorithm_04();
-    // test_algorithm_05();
+    test_algorithm_01();
+    test_algorithm_02();
+    test_algorithm_03();
+    test_algorithm_04();
+    test_algorithm_05();
     test_algorithm_06();
 }
 
@@ -59,7 +60,14 @@ void test_list() {
     test_list_01();
 }
 
+void test_deque() {
+    test_deque_01();
+    test_deque_02();
+    test_deque_03();
+}
+
 int main() {
-    test_list();
+    std::cout << "main: " << std::endl;
+    test_deque();
     return 0;
 }
