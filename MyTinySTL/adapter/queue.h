@@ -2,7 +2,6 @@
 #define TINYSTL_QUEUE_H
 
 // queue、priority_queue 头文件
-
 #include "deque.h"
 #include "vector.h"
 #include "functional.h"
@@ -162,8 +161,8 @@ namespace mystl {
                       "the value_type of Container should be same with T");
 
     private:
-       container_type c_;  // 用底层容器来表现priority_queue
-       value_compare comp_;  // 比较标准
+       container_type c_;     // 用底层容器来表现priority_queue
+       value_compare comp_;   // 比较标准
 
     public:
         // 构造、复制、移动函数
@@ -229,7 +228,7 @@ namespace mystl {
 
     public:
         // 访问元素相关
-        const_reference top() const { return c_.fron(); }
+        const_reference top() const { return c_.front(); }
 
         // 容量相关操作
         bool empty() const noexcept { return c_.empty(); }
@@ -249,7 +248,7 @@ namespace mystl {
         }
 
         void pop() {
-            mystl::pop_heap(c_.begin(). c_.end(), comp_);
+            mystl::pop_heap(c_.begin(), c_.end(), comp_);
             c_.pop_back();
         }
 
@@ -262,7 +261,7 @@ namespace mystl {
         // swap
         void swap(priority_queue &rhs) noexcept(noexcept(mystl::swap(c_, rhs.c_)) &&
                                                 noexcept(mystl::swap(comp_, rhs.comp_))) {
-            mystl::swap(c_. rhs.c_);
+            mystl::swap(c_, rhs.c_);
             mystl::swap(comp_, rhs.comp_);
         }
 
@@ -276,18 +275,19 @@ namespace mystl {
         }
     };
 
-    // 重载比较操作符
-    template <typename T, typename Container, typename Compare>
-    bool operator==(priority_queue<T, Container, Compare> &lhs,
-                    priority_queue<T, Container, Compare> &rhs) {
-        return lhs == rhs;
-    }
-
-    template <typename T, typename Container, typename Compare>
-    bool operator!=(priority_queue<T, Container, Compare> &lhs,
-                    priority_queue<T, Container, Compare> &rhs) {
-        return lhs != rhs;
-    }
+    // // 重载比较操作符
+    // template <typename T, typename Container, typename Compare>
+    // bool operator==(priority_queue<T, Container, Compare> &lhs,
+    //                 priority_queue<T, Container, Compare> &rhs) {
+    //     std::cout << "test" << std::endl;
+    //     return lhs.operator==()(rhs);
+    // }
+    //
+    // template <typename T, typename Container, typename Compare>
+    // bool operator!=(priority_queue<T, Container, Compare> &lhs,
+    //                 priority_queue<T, Container, Compare> &rhs) {
+    //     return lhs.operator!=()(rhs);
+    // }
 
     // 重载 mystl 的 swap
     template <typename T, typename Container, typename Compare>

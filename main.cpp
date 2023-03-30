@@ -74,10 +74,12 @@ void test_stack() {
 
 void test_queue() {
     test_queue_01();
+    test_pri_queue_01();
+    test_pri_queue_02();
 }
 
 int main() {
     std::cout << "main: " << std::endl;
-    test_queue();
+
     return 0;
 }

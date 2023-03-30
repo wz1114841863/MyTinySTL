@@ -59,8 +59,14 @@ queue.h:
     emplace()
     
 ```
-priority_queue.h
-
-```  
-
+priority_queue.h  
+以vector作为底层，实际上是大顶堆，结合heap_algo, 不包含迭代器
+``` 
+    类模板中包含两个默认值，默认容器以及默认比较操作符
+    template <typename T, typename Container = mystl::vector<T>,
+                typename Compare = mystl::less<typename Container::value_type>>
+   
+    其余方法与queue一致，实现方式依赖于make_heap等函数
+    
+    比较操作符仅重载了 ==， !=
 ```
