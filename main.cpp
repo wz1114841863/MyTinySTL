@@ -8,6 +8,8 @@
 #include "test_algorithm.h"
 #include "test_list.h"
 #include "test_deque.h"
+#include "test_stack.h"
+#include "test_queue.h"
 
 void test_alloc() {
     std::cout << "测试mystl::alloc" << std::endl;
@@ -66,8 +68,16 @@ void test_deque() {
     test_deque_03();
 }
 
+void test_stack() {
+    test_stack_01();
+}
+
+void test_queue() {
+    test_queue_01();
+}
+
 int main() {
     std::cout << "main: " << std::endl;
-    test_deque();
+    test_queue();
     return 0;
 }

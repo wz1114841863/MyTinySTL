@@ -35,7 +35,7 @@ namespace mystl {
         queue(size_type n, const value_type &value):c_(n, value) {}
 
         template <typename IIter>
-        queue(IITer first, IIter last):c_(first, last) {}
+        queue(IIter first, IIter last):c_(first, last) {}
 
         queue(const Container &c):c_(c) {}
 
@@ -45,7 +45,7 @@ namespace mystl {
         queue(const queue &rhs):c_(rhs.c_) {}
 
         queue(queue &&rhs) noexcept(std::is_nothrow_move_constructible<Container>::value)
-        :c_(mystl::moce(rhs.c_)) {}
+        :c_(mystl::move(rhs.c_)) {}
 
         queue &operator=(const queue &rhs) {
             c_ = rhs.c_;
@@ -285,7 +285,7 @@ namespace mystl {
 
     template <typename T, typename Container, typename Compare>
     bool operator!=(priority_queue<T, Container, Compare> &lhs,
-                    priority_queue<T, Container, Compare> &rhs)
+                    priority_queue<T, Container, Compare> &rhs) {
         return lhs != rhs;
     }
 

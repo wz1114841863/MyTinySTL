@@ -29,7 +29,7 @@ namespace mystl {
         stack(size_type n, const value_type &value):c_(n, value) {}
 
         template <typename IIter>
-        stack(IITer first, IIter last):c_(first, last) {}
+        stack(IIter first, IIter last):c_(first, last) {}
 
         stack(const Container &c):c_(c) {}
 
@@ -39,7 +39,7 @@ namespace mystl {
         stack(const stack &rhs):c_(rhs.c_) {}
 
         stack(stack &&rhs) noexcept(std::is_nothrow_move_constructible<Container>::value)
-        :c_(mystl::moce(rhs.c_)) {}
+        :c_(mystl::move(rhs.c_)) {}
 
         stack &operator=(const stack &rhs) {
             c_ = rhs.c_;

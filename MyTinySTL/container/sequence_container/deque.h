@@ -96,6 +96,19 @@ namespace mystl {
             return *this;
         }
 
+        self &operator=(iterator &&rhs) {
+            if (this != &rhs) {
+                cur = rhs.cur;
+                first = rhs.first;
+                last = rhs.last;
+                node = rhs.node;
+                rhs.cur = nullptr;
+                rhs.first = nullptr;
+                rhs.last = nullptr;
+                rhs.node = nullptr;
+            }
+            return *this;
+        }
         // 转到另一个缓冲区
         void set_node(map_pointer new_node) {  // 未改动cur
             node = new_node;
