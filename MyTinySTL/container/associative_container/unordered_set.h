@@ -105,23 +105,17 @@ namespace mystl {
         ~unordered_set() = default;
 
         // 迭代器相关
-        iterator begin() noexcept { return ht_.begin(); }
-
+        iterator       begin()       noexcept { return ht_.begin(); }
         const_iterator begin() const noexcept { return ht_.begin(); }
-
-        iterator end() noexcept { return ht_.end(); }
-
-        const_iterator end() const noexcept { return ht_.end(); }
+        iterator       end()         noexcept { return ht_.end(); }
+        const_iterator end()   const noexcept { return ht_.end(); }
 
         const_iterator cbegin() const noexcept { return ht_.cbegin(); }
-
-        const_iterator cend() const noexcept { return ht_.cend(); }
+        const_iterator cend()   const noexcept { return ht_.cend(); }
 
         // 容量相关
-        bool empty() const noexcept { return ht_.empty(); }
-
-        size_type size() const noexcept { return ht_.size(); }
-
+        bool      empty()    const noexcept { return ht_.empty(); }
+        size_type size()     const noexcept { return ht_.size(); }
         size_type max_size() const noexcept { return ht_.max_size(); }
 
         // 修改容器操作
@@ -159,7 +153,6 @@ namespace mystl {
         }
 
         // erase / clear
-
         void erase(iterator it) { ht_.erase(it); }
 
         void erase(iterator first, iterator last) { ht_.erase(first, last); }
@@ -186,40 +179,27 @@ namespace mystl {
         }
 
         // bucket interface
-        local_iterator begin(size_type n) noexcept { return ht_.begin(n); }
-
-        const_local_iterator begin(size_type n) const noexcept { return ht_.begin(n); }
-
+        local_iterator       begin(size_type n)        noexcept { return ht_.begin(n); }
+        const_local_iterator begin(size_type n)  const noexcept { return ht_.begin(n); }
         const_local_iterator cbegin(size_type n) const noexcept { return ht_.cbegin(n); }
+        local_iterator       end(size_type n)          noexcept { return ht_.end(n); }
+        const_local_iterator end(size_type n)    const noexcept { return ht_.end(n); }
+        const_local_iterator cend(size_type n)   const noexcept { return ht_.cend(n); }
 
-        local_iterator end(size_type n) noexcept { return ht_.end(n); }
-
-        const_local_iterator end(size_type n) const noexcept { return ht_.end(n); }
-
-        const_local_iterator cend(size_type n) const noexcept { return ht_.cend(n); }
-
-        size_type bucket_count() const noexcept { return ht_.bucket_count(); }
-
+        size_type bucket_count()     const noexcept { return ht_.bucket_count(); }
         size_type max_bucket_count() const noexcept { return ht_.max_bucket_count(); }
-
-        size_type bucket_size(size_type n) const noexcept { return ht_.bucket_size(n); }
-
-        size_type bucket(const key_type& key) const { return ht_.bucket(key); }
+        size_type bucket_size(size_type n)    const noexcept { return ht_.bucket_size(n); }
+        size_type bucket(const key_type &key) const { return ht_.bucket(key); }
 
         // hash policy
-        float load_factor() const noexcept { return ht_.load_factor(); }
-
+        float load_factor()     const noexcept { return ht_.load_factor(); }
         float max_load_factor() const noexcept { return ht_.max_load_factor(); }
-
         void max_load_factor(float ml) { ht_.max_load_factor(ml); }
-
         void rehash(size_type count) { ht_.rehash(count); }
-
         void reserve(size_type count) { ht_.reserve(count); }
 
-        hasher hash_fcn() const { return ht_.hash_fcn(); }
-
-        key_equal key_eq() const { return ht_.key_eq(); }
+        hasher    hash_fcn() const { return ht_.hash_fcn(); }
+        key_equal key_eq()   const { return ht_.key_eq(); }
 
     public:
         friend bool operator==(const unordered_set &lhs, const unordered_set &rhs) {
@@ -235,13 +215,13 @@ namespace mystl {
     template <typename Key, typename Hash, typename KeyEqual, typename Alloc>
     bool operator==(const unordered_set<Key, Hash, KeyEqual> &lhs,
                     const unordered_set<Key, Hash, KeyEqual> &rhs) {
-        return lhs == rhs;
+        return lhs.operator==(rhs);
     }
 
     template <typename Key, typename Hash, typename KeyEqual, typename Alloc>
     bool operator!=(const unordered_set<Key, Hash, KeyEqual> &lhs,
                     const unordered_set<Key, Hash, KeyEqual> &rhs) {
-        return lhs != rhs;
+        return lhs.operator!=(rhs);
     }
 
     // 重载 mystl 的 swap
@@ -316,18 +296,18 @@ namespace mystl {
             }
         }
 
-        unordered_multiset(const unordered_set &rhs)
+        unordered_multiset(const unordered_multiset &rhs)
         :ht_(rhs.ht_) {}
 
-        unordered_multiset(unordered_set &&rhs) noexcept
+        unordered_multiset(unordered_multiset &&rhs) noexcept
         :ht_(mystl::move(rhs.ht_)) {}
 
-        unordered_multiset &operator=(const unordered_set &rhs) {
+        unordered_multiset &operator=(const unordered_multiset &rhs) {
             ht_ = rhs.ht_;
             return *this;
         }
 
-        unordered_multiset &operator=(unordered_set &&rhs) {
+        unordered_multiset &operator=(unordered_multiset &&rhs) {
             ht_ = mystl::move(rhs.ht_);
             return *this;
         }
@@ -341,26 +321,19 @@ namespace mystl {
             return *this;
         }
 
-        ~unordered_set() = default;
+        ~unordered_multiset() = default;
 
         // 迭代器相关
-        iterator begin() noexcept { return ht_.begin(); }
-
-        const_iterator begin() const noexcept { return ht_.begin(); }
-
-        iterator end() noexcept { return ht_.end(); }
-
-        const_iterator end() const noexcept { return ht_.end(); }
-
+        iterator       begin()        noexcept { return ht_.begin(); }
+        const_iterator begin()  const noexcept { return ht_.begin(); }
+        iterator       end()          noexcept { return ht_.end(); }
+        const_iterator end()    const noexcept { return ht_.end(); }
         const_iterator cbegin() const noexcept { return ht_.cbegin(); }
-
-        const_iterator cend() const noexcept { return ht_.cend(); }
+        const_iterator cend()   const noexcept { return ht_.cend(); }
 
         // 容量相关
-        bool empty() const noexcept { return ht_.empty(); }
-
-        size_type size() const noexcept { return ht_.size(); }
-
+        bool      empty()    const noexcept { return ht_.empty(); }
+        size_type size()     const noexcept { return ht_.size(); }
         size_type max_size() const noexcept { return ht_.max_size(); }
 
         // 修改容器相关
@@ -395,9 +368,7 @@ namespace mystl {
 
         // erase / clear
         void erase(iterator it) { ht_.erase(it); }
-
         void erase(iterator first, iterator last) { ht_.erase(first, last); }
-
         size_type erase(const key_type &key) { return ht_.erase_multi(key); }
 
         void clear() { ht_.clear(); }
@@ -420,40 +391,27 @@ namespace mystl {
         }
 
         // bucket interface
-        local_iterator begin(size_type n) noexcept { return ht_.begin(n); }
-
-        const_local_iterator begin(size_type n) const noexcept { return ht_.begin(n); }
-
+        local_iterator       begin(size_type n)        noexcept { return ht_.begin(n); }
+        const_local_iterator begin(size_type n)  const noexcept { return ht_.begin(n); }
         const_local_iterator cbegin(size_type n) const noexcept { return ht_.cbegin(n); }
+        local_iterator       end(size_type n)          noexcept { return ht_.end(n); }
+        const_local_iterator end(size_type n)    const noexcept { return ht_.end(n); }
+        const_local_iterator cend(size_type n)   const noexcept { return ht_.cend(n); }
 
-        local_iterator end(size_type n) noexcept { return ht_.end(n); }
-
-        const_local_iterator end(size_type n) const noexcept { return ht_.end(n); }
-
-        const_local_iterator cend(size_type n) const noexcept { return ht_.cend(n); }
-
-        size_type bucket_count() const noexcept { return ht_.bucket_count(); }
-
+        size_type bucket_count()     const noexcept { return ht_.bucket_count(); }
         size_type max_bucket_count() const noexcept { return ht_.max_bucket_count(); }
-
-        size_type bucket_size(size_type n) const noexcept { return ht_.bucket_size(n); }
-
-        size_type bucket(const key_type& key) const { return ht_.bucket(key); }
+        size_type bucket_size(size_type n)    const noexcept { return ht_.bucket_size(n); }
+        size_type bucket(const key_type& key) const          { return ht_.bucket(key); }
 
         // hash policy
-        float load_factor() const noexcept { return ht_.load_factor(); }
-
+        float load_factor()     const noexcept { return ht_.load_factor(); }
         float max_load_factor() const noexcept { return ht_.max_load_factor(); }
-
         void max_load_factor(float ml) { ht_.max_load_factor(ml); }
-
         void rehash(size_type count) { ht_.rehash(count); }
-
         void reserve(size_type count) { ht_.reserve(count); }
 
-        hasher hash_fcn() const { return ht_.hash_fcn(); }
-
-        key_equal key_eq() const { return ht_.key_eq(); }
+        hasher    hash_fcn() const { return ht_.hash_fcn(); }
+        key_equal key_eq()   const { return ht_.key_eq(); }
 
     public:
         friend bool operator==(const unordered_multiset &lhs, const unordered_multiset &rhs) {
@@ -469,13 +427,13 @@ namespace mystl {
     template <typename Key, typename T, typename Hash, typename KeyEqual>
     bool operator==(const unordered_multiset<Key, Hash, KeyEqual> &lhs,
                     const unordered_multiset<Key, Hash, KeyEqual> &rhs) {
-        return lhs == rhs;
+        return lhs.operator==(rhs);
     }
 
     template <typename Key, typename T, typename Hash, typename KeyEqual>
     bool operator!=(const unordered_multiset<Key, Hash, KeyEqual> &lhs,
                     const unordered_multiset<Key, Hash, KeyEqual> &rhs) {
-        return lhs != rhs;
+        return lhs.operator!=(rhs);
     }
 
     // 重载 mystl 的 swap

@@ -11,6 +11,8 @@
 #include "test_stack.h"
 #include "test_queue.h"
 #include "test_reverse_iterator.h"
+#include "test_hash.h"
+#include "test_RBTree.h"
 
 void test_alloc() {
     std::cout << "测试mystl::alloc" << std::endl;
@@ -82,8 +84,14 @@ void test_queue() {
 void test_reverse_iterator() {
     test_reverse_iterator_01();
 }
+
+void test_hashtable() {
+    test_hashtable_01();
+    test_hashtable_02();
+}
+
 int main() {
     std::cout << "main: " << std::endl;
-    test_reverse_iterator();
+    test_hashtable();
     return 0;
 }

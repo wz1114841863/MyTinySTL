@@ -102,7 +102,7 @@ namespace mystl {
     struct ht_const_local_iterator;
 
     // ht_iterator，单向迭代器
-    template <typename T, typename HashFun, typename KeyEqual>
+    template <typename T, typename Hash, typename KeyEqual>
     struct ht_iterator_base :public mystl::iterator<mystl::forward_iterator_tag, T> {
         typedef mystl::hashtable<T, Hash, KeyEqual>         hashtable;
         typedef ht_iterator_base<T, Hash, KeyEqual>         base;
@@ -116,8 +116,8 @@ namespace mystl {
         typedef size_t                                      size_type;
         typedef ptrdiff_t                                   difference_type;
 
-        node_ptr node;  // 迭代器当前所指节点
-        contain_ptr ht;    // 保持与容器的连结
+        node_ptr node;   // 迭代器当前所指节点
+        contain_ptr ht;  // 保持与容器的连结
 
         ht_iterator_base() = default;
 
@@ -126,7 +126,7 @@ namespace mystl {
         bool operator!=(const base &rhs) const { return node != rhs.node; }
     };
 
-    template <typename T, typename HashFun, typename KeyEqual>
+    template <typename T, typename Hash, typename KeyEqual>
     struct ht_iterator :public ht_iterator_base<T, Hash, KeyEqual> {
         typedef ht_iterator_base<T, Hash, KeyEqual> base;
         typedef typename base::hashtable            hashtable;
@@ -177,9 +177,8 @@ namespace mystl {
         }
 
         // 重载操作符
-        reference operator*() const { return node->value; }
-
-        pointer operator->() const { return &(operator*()); }
+        reference operator*()  const { return node->value; }
+        pointer   operator->() const { return &(operator*()); }
 
         iterator &operator++() {
             MYSTL_DEBUG(node != nullptr);
@@ -188,7 +187,7 @@ namespace mystl {
             if (node == nullptr) {
                 // 如果下一个位置为空，跳到下一个 bucket 的起始处
                 auto index = ht->hash(value_traits::get_key(old->value));
-                while (!node && ++index < ht->bucket_size_) {
+                while (!node && ++index < ht->bucket_size_) {  // 这里的index得先加1
                     node = ht->buckets_[index];
                 }
             }
@@ -202,7 +201,7 @@ namespace mystl {
         }
     };
 
-    template <typename T, typename HashFun, typename KeyEqual>
+    template <typename T, typename Hash, typename KeyEqual>
     struct ht_const_iterator :public ht_iterator_base<T, Hash, KeyEqual> {
         typedef ht_iterator_base<T, Hash, KeyEqual> base;
         typedef typename base::hashtable            hashtable;
@@ -244,7 +243,7 @@ namespace mystl {
             return *this;
         }
 
-        cosnt_iterator &operator=(const const_iterator &rhs) {
+        const_iterator &operator=(const const_iterator &rhs) {
             if (this != &rhs) {
                 node = rhs.node;
                 ht = rhs.ht;
@@ -253,11 +252,10 @@ namespace mystl {
         }
 
         // 重载操作符
-        reference operator*() const { return node->value; }
+        reference operator*()  const { return node->value; }
+        pointer   operator->() const { return &(operator*()); }
 
-        pointer operator->() const { return &(operator*()); }
-
-        cosnt_iterator &operator++() {
+        const_iterator &operator++() {
             MYSTL_DEBUG(node != nullptr);
             const node_ptr old = node;
             node = node->next;
@@ -271,7 +269,7 @@ namespace mystl {
             return *this;
         }
 
-        cosnt_iterator operator++(int) {
+        const_iterator operator++(int) {
             iterator tmp = *this;
             ++*this;
             return tmp;
@@ -293,17 +291,11 @@ namespace mystl {
         typedef ht_const_local_iterator<T> const_local_iterator;
         node_ptr node;
 
-        ht_local_iterator(node_ptr n)
-        :node(n) {}
-
-        ht_local_iterator(const local_iterator &rhs)
-        :node(rhs.node) {}
-
-        ht_local_iterator(const const_local_iterator &rhs)
-        :node(rhs.node) {}
+        ht_local_iterator(node_ptr n):node(n) {}
+        ht_local_iterator(const local_iterator &rhs):node(rhs.node) {}
+        ht_local_iterator(const const_local_iterator &rhs):node(rhs.node) {}
 
         reference operator*()  const { return node->value; }
-
         pointer   operator->() const { return &(operator*()); }
 
         self &operator++() {
@@ -319,7 +311,6 @@ namespace mystl {
         }
 
         bool operator==(const self &other) const { return node == other.node; }
-
         bool operator!=(const self &other) const { return node != other.node; }
     };
 
@@ -337,17 +328,11 @@ namespace mystl {
         typedef ht_const_local_iterator<T> const_local_iterator;
         node_ptr node;
 
-        ht_const_local_iterator(node_ptr n)
-        :node(n) {}
-
-        ht_const_local_iterator(const local_iterator &rhs)
-        :node(rhs.node) {}
-
-        ht_const_local_iterator(const const_local_iterator &rhs)
-        :node(rhs.node) {}
+        ht_const_local_iterator(node_ptr n):node(n) {}
+        ht_const_local_iterator(const local_iterator &rhs):node(rhs.node) {}
+        ht_const_local_iterator(const const_local_iterator &rhs):node(rhs.node) {}
 
         reference operator*()  const { return node->value; }
-
         pointer   operator->() const { return &(operator*()); }
 
         self &operator++() {
@@ -363,7 +348,6 @@ namespace mystl {
         }
 
         bool operator==(const self &other) const { return node == other.node; }
-
         bool operator!=(const self &other) const { return node != other.node; }
     };
 
@@ -374,6 +358,7 @@ namespace mystl {
         #define SYSTEM_32 1
     #endif
 
+    // 哈希表的的大小都是素数, 减少冲突
     #ifdef SYSTEM_64
 
         #define PRIME_NUM 99
@@ -471,12 +456,12 @@ namespace mystl {
         allocator_type get_allocator() const { return allocator_type(); }
 
     private:
-        bucket_type buckets_;
-        size_type   bucket_size_;
-        size_type   size_;
-        float       mlf_;
-        hasher      hash_;
-        key_equal   equal_;
+        bucket_type buckets_;		// 桶数组，使用vector
+        size_type   bucket_size_;	// 桶大小
+        size_type   size_;			// 元素数量
+        float       mlf_;			// 最大桶装载比例
+        hasher      hash_;			// 哈希仿函数
+        key_equal   equal_;			// 键值相等的比较仿函数
 
     private:
         bool is_equal(const key_type &key1, const key_type &key2) {
@@ -534,11 +519,8 @@ namespace mystl {
         }
 
         hashtable(hashtable &&rhs) noexcept
-        : bucket_size_(rhs.bucket_size_),
-          size_(rhs.size_),
-          mlf_(rhs.mlf_),
-          hash_(rhs.hash_),
-          equal_(rhs.equal_) {
+        :bucket_size_(rhs.bucket_size_), size_(rhs.size_), mlf_(rhs.mlf_),
+        hash_(rhs.hash_), equal_(rhs.equal_) {
             buckets_ = mystl::move(rhs.buckets_);
             rhs.bucket_size_ = 0;
             rhs.size_ = 0;
@@ -551,23 +533,16 @@ namespace mystl {
         ~hashtable() { clear(); }
 
         // 迭代器相关操作
-        iterator begin() noexcept { return M_begin(); }
-
-        const_iterator begin() const noexcept { return M_begin(); }
-
-        iterator end() noexcept { return iterator(nullptr, this); }
-
-        const_iterator end() const noexcept { return M_cit(nullptr); }
-
-        const_iterator cbegin() const noexcept { return begin(); }
-
-        const_iterator cend() const noexcept { return end(); }
+        iterator        begin()        noexcept { return M_begin(); }
+        const_iterator  begin()  const noexcept { return M_begin(); }
+        iterator        end()          noexcept { return iterator(nullptr, this); }
+        const_iterator  end()    const noexcept { return M_cit(nullptr); }
+        const_iterator  cbegin() const noexcept { return begin(); }
+        const_iterator  cend()   const noexcept { return end(); }
 
         // 容量相关操作
-        bool empty() const noexcept { return size_ == 0; }
-
-        size_type size() const noexcept { return size_; }
-
+        bool      empty()    const noexcept { return size_ == 0; }
+        size_type size()     const noexcept { return size_; }
         size_type max_size() const noexcept { return static_cast<size_type>(-1); }
 
         // 修改容器相关操作
@@ -641,11 +616,9 @@ namespace mystl {
 
         // erase / clear
         void erase(const_iterator position);
-
         void erase(const_iterator first, const_iterator last);
 
         size_type erase_multi(const key_type &key);
-
         size_type erase_unique(const key_type &key);
 
         void clear();
@@ -726,8 +699,7 @@ namespace mystl {
             rehash(static_cast<size_type>((float)count / max_load_factor() + 0.5f));
         }
 
-        hasher hash_fcn() const { return hash_; }
-
+        hasher    hash_fcn() const { return hash_; }
         key_equal key_eq()   const { return equal_; }
 
     private:
@@ -852,7 +824,7 @@ namespace mystl {
     hashtable<T, Hash, KeyEqual>::insert_unique_noresize(const value_type &value) {
         const auto n = hash(value_traits::get_key(value));
         auto first = buckets_[n];
-        for (auto cur = first; cur; cur = cur->next) {
+        for (auto cur = first; cur != nullptr; cur = cur->next) {
             if (is_equal(value_traits::get_key(cur->value), value_traits::get_key(value))) {
                 return mystl::make_pair(iterator(cur, this), false);
             }
@@ -872,7 +844,7 @@ namespace mystl {
         const auto n = hash(value_traits::get_key(value));
         auto first = buckets_[n];
         auto tmp = create_node(value);
-        for (auto cur = first; cur; cur = cur->next) {
+        for (auto cur = first; cur != nullptr; cur = cur->next) {
             if (is_equal(value_traits::get_key(cur->value), value_traits::get_key(value))) {
                 // 如果链表中存在相同键值的节点就马上插入，然后返回
                 tmp->next = cur->next;
@@ -1060,7 +1032,7 @@ namespace mystl {
     template <typename T, typename Hash, typename KeyEqual>
     typename hashtable<T, Hash, KeyEqual>::size_type
     hashtable<T, Hash, KeyEqual>::
-    count(const key_type& key) const {
+    count(const key_type &key) const {
         const auto n = hash(key);
         size_type result = 0;
         for (node_ptr cur = buckets_[n]; cur; cur = cur->next) {
@@ -1264,8 +1236,8 @@ namespace mystl {
 
     // hash函数
     template <typename T, typename Hash, typename KeyEqual>
-    typename hasttable<T, Hash, KeyEqual>::size_type
-    hash(const key_type &key, size_type n) const {
+    typename hashtable<T, Hash, KeyEqual>::size_type
+    hashtable<T, Hash, KeyEqual>::hash(const key_type &key, size_type n) const {
         return hash_(key) % n;
     }
 
