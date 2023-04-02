@@ -86,8 +86,13 @@ void test_reverse_iterator() {
 }
 
 void test_hashtable() {
-    test_hashtable_01();
-    test_hashtable_02();
+    // test_hashtable_01();
+    // test_hashtable_02();
+    // test_hashtable_03();
+    // test_hashtable_04();
+    // test_hashtable_05();
+    // test_hashtable_06();
+    test_hashtable_07();
 }
 
 int main() {

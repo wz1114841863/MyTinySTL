@@ -51,5 +51,6 @@ Test/
     test_stack.h
     test_queue.h
     test_reverse_iterator.h
-    尚待补充
+    test_hash.h
+    未完待续！
 ```

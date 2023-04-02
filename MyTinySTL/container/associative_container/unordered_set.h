@@ -39,9 +39,9 @@ namespace mystl {
         typedef typename base_type::reference            reference;
         typedef typename base_type::const_reference      const_reference;
 
-        typedef typename base_type::const_iterator       iterator;
+        typedef typename base_type::iterator             iterator;
         typedef typename base_type::const_iterator       const_iterator;
-        typedef typename base_type::const_local_iterator local_iterator;
+        typedef typename base_type::local_iterator       local_iterator;
         typedef typename base_type::const_local_iterator const_local_iterator;
 
         allocator_type get_allocator() const { return ht_.get_allocator(); }
@@ -203,11 +203,11 @@ namespace mystl {
 
     public:
         friend bool operator==(const unordered_set &lhs, const unordered_set &rhs) {
-            return lhs.ht_.equal_range_unique(rhs.ht_);
+            return lhs.ht_.equal_to_unique(rhs.ht_);
         }
 
         friend bool operator!=(const unordered_set &lhs, const unordered_set &rhs) {
-            return !lhs.ht_.equal_range_unique(rhs.ht_);
+            return !(lhs.ht_.equal_to_unique(rhs.ht_));
         }
     };
 
@@ -215,13 +215,13 @@ namespace mystl {
     template <typename Key, typename Hash, typename KeyEqual, typename Alloc>
     bool operator==(const unordered_set<Key, Hash, KeyEqual> &lhs,
                     const unordered_set<Key, Hash, KeyEqual> &rhs) {
-        return lhs.operator==(rhs);
+        return lhs == rhs;
     }
 
     template <typename Key, typename Hash, typename KeyEqual, typename Alloc>
     bool operator!=(const unordered_set<Key, Hash, KeyEqual> &lhs,
                     const unordered_set<Key, Hash, KeyEqual> &rhs) {
-        return lhs.operator!=(rhs);
+        return lhs != rhs;
     }
 
     // 重载 mystl 的 swap
@@ -415,11 +415,11 @@ namespace mystl {
 
     public:
         friend bool operator==(const unordered_multiset &lhs, const unordered_multiset &rhs) {
-            return lhs.ht_.equal_range_multi(rhs.ht_);
+            return lhs.ht_.equal_to_multi(rhs.ht_);
         }
 
         friend bool operator!=(const unordered_multiset &lhs, const unordered_multiset &rhs) {
-            return !lhs.ht_.equal_range_multi(rhs.ht_);
+            return !lhs.ht_.equal_to_multi(rhs.ht_);
         }
     };
 
@@ -427,13 +427,13 @@ namespace mystl {
     template <typename Key, typename T, typename Hash, typename KeyEqual>
     bool operator==(const unordered_multiset<Key, Hash, KeyEqual> &lhs,
                     const unordered_multiset<Key, Hash, KeyEqual> &rhs) {
-        return lhs.operator==(rhs);
+        return lhs == rhs;
     }
 
     template <typename Key, typename T, typename Hash, typename KeyEqual>
     bool operator!=(const unordered_multiset<Key, Hash, KeyEqual> &lhs,
                     const unordered_multiset<Key, Hash, KeyEqual> &rhs) {
-        return lhs.operator!=(rhs);
+        return lhs != rhs;
     }
 
     // 重载 mystl 的 swap

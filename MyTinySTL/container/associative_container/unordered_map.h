@@ -21,7 +21,7 @@ namespace mystl {
     class unordered_map {
     private:
         // 使用hashtable作为底层机制
-        typedef hashtable<mystl::pair<const Key, T>, Hash, KeyEqual> base_type;
+        typedef hashtable<mystl::pair<Key, T>, Hash, KeyEqual> base_type;
         base_type ht_;
 
     public:
@@ -63,8 +63,10 @@ namespace mystl {
                       const Hash &hash = Hash(),
                       const KeyEqual &equal = KeyEqual())
         :ht_(mystl::max(bucket_count, static_cast<size_type>(mystl::distance(first, last))), hash, equal) {
-            for (; first != last; ++first)
+            for (; first != last; ++first) {
                 ht_.insert_unique_noresize(*first);
+            }
+
         }
 
         unordered_map(std::initializer_list<value_type> ilist,
@@ -251,11 +253,11 @@ namespace mystl {
 
     public:
         friend bool operator==(const unordered_map &lhs, const unordered_map &rhs) {
-            return lhs.ht_.equal_range_unique(rhs.ht_);
+            return lhs.ht_.equal_to_unique(rhs.ht_);
         }
 
         friend bool operator!=(const unordered_map &lhs, const unordered_map &rhs) {
-            return !lhs.ht_.equal_range_unique(rhs.ht_);
+            return !lhs.ht_.equal_to_unique(rhs.ht_);
         }
     };
 
@@ -278,7 +280,7 @@ namespace mystl {
               unordered_map<Key, T, Hash, KeyEqual> &rhs) {
         lhs.swap(rhs);
     }
-}  // namespace
+}  // namespace mystl;
 
 namespace mystl {
     // 模板类 unordered_multimap，键值允许重复
@@ -289,7 +291,7 @@ namespace mystl {
     class unordered_multimap {
     private:
         // 使用 hashtable 作为底层机制
-        typedef hashtable<pair<const Key, T>, Hash, KeyEqual> base_type;
+        typedef hashtable<pair<Key, T>, Hash, KeyEqual> base_type;
         base_type ht_;
 
     public:
@@ -486,11 +488,11 @@ namespace mystl {
 
     public:
         friend bool operator==(const unordered_multimap &lhs, const unordered_multimap &rhs) {
-            return lhs.ht_.equal_range_multi(rhs.ht_);
+            return lhs.ht_.equal_to_multi(rhs.ht_);
         }
 
         friend bool operator!=(const unordered_multimap &lhs, const unordered_multimap &rhs) {
-            return !lhs.ht_.equal_range_multi(rhs.ht_);
+            return !lhs.ht_.equal_to_multi(rhs.ht_);
         }
     };
 

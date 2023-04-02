@@ -1401,13 +1401,14 @@ namespace mystl {
                             BinaryPred pred) {
         constexpr bool is_ra_it = mystl::is_random_access_iterator<ForwardIter1>::value
                 && mystl::is_random_access_iterator<ForwardIter2>::value;
-        if (is_ra_it) {  // 是random_access_iterator, 计算长度，不相等则返回
-            auto len1 = last1 - first1;
-            auto len2 = last2 - first2;
-            if (len1 != len2) {
-                return false;
-            }
-        }
+
+        // if (is_ra_it) {  // 是random_access_iterator, 计算长度，不相等则返回
+        //     auto len1 = last1 - first1;
+        //     auto len2 = last2 - first2;
+        //     if (len1 != len2) {
+        //         return false;
+        //     }
+        // }
 
         // 先找出相同的前缀段
         for (; first1 != last1 && first2 != last2; ++first1, (void) ++first2) {

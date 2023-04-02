@@ -3,6 +3,7 @@
 // hashtable : 哈希表，使用开链法处理冲突
 
 #include <initializer_list>
+#include <iostream>
 #include "algo.h"
 #include "functional.h"
 #include "memory.h"
@@ -14,8 +15,8 @@ namespace mystl {
     // hashtable 的节点定义
     template <typename T>
     struct hashtable_node {
-        hashtable_node *next;  // 指向下一节点
-        T value;  // 储存实值
+        hashtable_node  *next;  // 指向下一节点
+        T               value;  // 储存实值
 
         hashtable_node() = default;
 
@@ -122,7 +123,6 @@ namespace mystl {
         ht_iterator_base() = default;
 
         bool operator==(const base &rhs) const { return node == rhs.node; }
-
         bool operator!=(const base &rhs) const { return node != rhs.node; }
     };
 
@@ -699,6 +699,10 @@ namespace mystl {
             rehash(static_cast<size_type>((float)count / max_load_factor() + 0.5f));
         }
 
+        // comparision
+        bool equal_to_multi(const hashtable &other) const;
+        bool equal_to_unique(const hashtable &other) const;
+
         hasher    hash_fcn() const { return hash_; }
         key_equal key_eq()   const { return equal_; }
 
@@ -749,10 +753,7 @@ namespace mystl {
 
         void erase_bucket(size_type n, node_ptr last);
 
-        // comparision
-        bool equal_to_multi(const hashtable &other);
 
-        bool equal_to_unique(const hashtable &other);
     };
     /*********************************
      * 赋值运算符
@@ -926,12 +927,12 @@ namespace mystl {
     typename hashtable<T, Hash, KeyEqual>::size_type
     hashtable<T, Hash, KeyEqual>::erase_multi(const key_type &key) {
         auto p = equal_range_multi(key);
+        auto dis = mystl::distance(p.first, p.second);
         if (p.first.node != nullptr) {
             erase(p.first, p.second);
-            return mystl::distance(p.first, p.second);
         }
 
-        return 0;
+        return dis;
     }
 
 
@@ -1416,22 +1417,23 @@ namespace mystl {
 
     // equal_to 函数
     template <typename T, typename Hash, typename KeyEqual>
-    bool hashtable<T, Hash, KeyEqual>::equal_to_multi(const hashtable &other) {
+    bool hashtable<T, Hash, KeyEqual>::equal_to_multi(const hashtable &other) const {
         if (size_ != other.size_) { return false; }
+
         for (auto f = begin(), l = end(); f != l;) {
             auto p1 = equal_range_multi(value_traits::get_key(*f));
             auto p2 = other.equal_range_multi(value_traits::get_key(*f));
-            if (mystl::distance(p1.first, p1.last) != mystl::distance(p2.first, p2.last) ||
-                !mystl::is_permutation(p1.first, p2.last, p2.first, p2.last)) {
+            if (mystl::distance(p1.first, p1.second) != mystl::distance(p2.first, p2.second) ||
+                !mystl::is_permutation(p1.first, p1.second, p2.first, p2.second)) {
                 return false;
             }
-            f = p1.last;
+            f = p1.second;
         }
         return true;
     }
 
     template <typename T, typename Hash, typename KeyEqual>
-    bool hashtable<T, Hash, KeyEqual>::equal_to_unique(const hashtable &other) {
+    bool hashtable<T, Hash, KeyEqual>::equal_to_unique(const hashtable &other) const {
         if (size_ != other.size_) { return false; }
         for (auto f = begin(), l = end(); f != l; ++f) {
             auto res = other.find(value_traits::get_key(*f));
